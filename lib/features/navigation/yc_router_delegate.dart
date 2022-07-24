@@ -3,6 +3,7 @@ import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/import_wallet_page.dart';
+import 'package:yc_wallet/features/wallet/pages/main_tab_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_factory_page.dart';
 import 'package:yc_wallet/utils/log_utils.dart';
 
@@ -35,6 +36,8 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
         return CreateWalletPage();
       case RouteName.importWallet:
         return ImportWalletPage();
+      case RouteName.mainTab:
+        return MainTabPage();
       default:
         throw UnsupportedError("不支持跳转到$config");
     }

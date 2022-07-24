@@ -55,7 +55,12 @@ class _WalletActions extends StatelessWidget {
                               .push(RouteConfig(RouteName.createWallet));
                         },
                         child: const Text("创建钱包")),
-                    OutlinedButton(onPressed: () {}, child: const Text("跳过"))
+                    OutlinedButton(
+                        onPressed: () {
+                          YCRouterDetegate.of(context)
+                              .push(RouteConfig(RouteName.mainTab));
+                        },
+                        child: const Text("跳过"))
                   ],
                 )),
           )),

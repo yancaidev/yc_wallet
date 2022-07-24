@@ -2,7 +2,8 @@ enum RouteName {
   home,
   notFound,
   createWallet,
-  importWallet;
+  importWallet,
+  mainTab;
 
   static RouteName fromPath(String path) {
     switch (path) {
@@ -10,6 +11,8 @@ enum RouteName {
         return RouteName.home;
       case "/create-wallet":
         return RouteName.createWallet;
+      case "/main":
+        return RouteName.mainTab;
       default:
         return RouteName.notFound;
     }
@@ -21,6 +24,8 @@ enum RouteName {
         return "/";
       case RouteName.createWallet:
         return "/create-wallet";
+      case RouteName.mainTab:
+        return "/main";
       default:
         return "/404";
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
@@ -14,26 +15,30 @@ class _WalletActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
+        ),
         body: Align(
-      alignment: FractionalOffset.bottomCenter,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextButton(
-              onPressed: () {
-                YCRouterDetegate.of(context)
-                    .push(RouteConfig(RouteName.importWallet));
-              },
-              child: const Text("导入钱包")),
-          TextButton(
-              onPressed: () {
-                YCRouterDetegate.of(context)
-                    .push(RouteConfig(RouteName.createWallet));
-              },
-              child: const Text("创建钱包")),
-          TextButton(onPressed: () {}, child: const Text("跳过"))
-        ],
-      ),
-    ));
+          alignment: FractionalOffset.bottomCenter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    YCRouterDetegate.of(context)
+                        .push(RouteConfig(RouteName.importWallet));
+                  },
+                  child: const Text("导入钱包")),
+              TextButton(
+                  onPressed: () {
+                    YCRouterDetegate.of(context)
+                        .push(RouteConfig(RouteName.createWallet));
+                  },
+                  child: const Text("创建钱包")),
+              TextButton(onPressed: () {}, child: const Text("跳过"))
+            ],
+          ),
+        ));
   }
 }

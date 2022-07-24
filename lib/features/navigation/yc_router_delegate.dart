@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
-import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/import_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_factory_page.dart';
-import 'package:yc_wallet/share/app_config.dart';
 import 'package:yc_wallet/utils/log_utils.dart';
 
 /// Router使用该对象
@@ -16,6 +14,7 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   @override
   final GlobalKey<NavigatorState> navigatorKey;
 
+  /// Record opened routes history.
   final _routeHistory = List.of([RouteConfig.home()]);
 
   /// `YCRouteDetegate` 构造函数，同时初始化 `navigationKey`
@@ -44,14 +43,15 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   @override
   Widget build(BuildContext context) {
     return Navigator(
-        pages: _pages,
-        onPopPage: (route, result) {
-          LogUtils.i("onPopPage is called");
-          if (!route.didPop(result)) {
-            return false;
-          }
-          return _popIfNotRoot();
-        });
+      pages: _pages,
+      onPopPage: (route, result) {
+        LogUtils.i("onPopPage is called");
+        if (!route.didPop(result)) {
+          return false;
+        }
+        return _popIfNotRoot();
+      },
+    );
   }
 
   @override

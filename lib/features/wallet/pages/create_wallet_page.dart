@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 
@@ -11,11 +12,13 @@ class _CreateWallet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("创建钱包")),
-      body: const Center(
-        child: Text("创建钱包"),
-      ),
-    );
+    return AnnotatedRegion(
+        value: const SystemUiOverlayStyle(statusBarColor: Colors.blue),
+        child: Scaffold(
+          appBar: AppBar(title: const Text("创建钱包")),
+          body: const Center(
+            child: Text("创建钱包"),
+          ),
+        ));
   }
 }

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/navigation/yc_route_infomation_parser.dart';
 
 void main() {
   runApp(MyApp());
+  // SystemUiOverlayStyle systemUiOverlayStyle =
+  //     const SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+  // SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 }
 
 class MyApp extends StatelessWidget {

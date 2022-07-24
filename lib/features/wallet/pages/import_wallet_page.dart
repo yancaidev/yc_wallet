@@ -12,7 +12,7 @@ class _ImportWallet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("创建钱包")),
+        appBar: AppBar(title: const Text("导入钱包")),
         body: const Center(
           child: Text("导入钱包"),
         ));

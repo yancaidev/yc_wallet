@@ -10,13 +10,10 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:developer' as dev;
 
-import 'package:coinslib/coinslib.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yc_wallet/features/wallet/wallet_extensions.dart';
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
 
-import 'package:yc_wallet/main.dart';
 import 'package:web3dart/credentials.dart' as web3;
 import 'package:web3dart/crypto.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
@@ -111,7 +108,7 @@ void main() {
         "hexKey from mnemonic sentence  is not right.");
     final seed = Uint8List.fromList(mnemonic.toSeed());
     final node = bip32.BIP32.fromSeed(seed);
-    final rootHexKey2 = bytesToHex(node.privateKey!);
+    final rootHexKey2 = bytesToHex(node.privateKey);
     final child = node.derivePath("m/44'/0'/0'/0/0");
     final hexKey2 = bytesToHex(child.privateKey);
 

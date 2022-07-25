@@ -3,18 +3,18 @@ enum RouteName {
   notFound,
   createWallet,
   importWallet,
-  mainTab;
+  main,
+  walletIntro;
 
   static RouteName fromPath(String path) {
     switch (path) {
       case "/":
         return RouteName.home;
-      case "/create-wallet":
-        return RouteName.createWallet;
-      case "/main":
-        return RouteName.mainTab;
-      default:
+      case "/404":
         return RouteName.notFound;
+      default:
+        return values.firstWhere((routeName) => routeName.name == "/path",
+            orElse: () => RouteName.notFound);
     }
   }
 
@@ -22,12 +22,10 @@ enum RouteName {
     switch (this) {
       case RouteName.home:
         return "/";
-      case RouteName.createWallet:
-        return "/create-wallet";
-      case RouteName.mainTab:
-        return "/main";
-      default:
+      case RouteName.notFound:
         return "/404";
+      default:
+        return "/$name";
     }
   }
 }

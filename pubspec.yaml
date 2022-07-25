@@ -61,6 +61,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   app_settings: ^4.1.6
   animated_text_kit: ^4.2.1
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

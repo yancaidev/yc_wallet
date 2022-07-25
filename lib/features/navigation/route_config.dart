@@ -10,4 +10,14 @@ class RouteConfig {
   RouteConfig.notFound() : routeName = RouteName.notFound;
 
   RouteConfig.home() : routeName = RouteName.home;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RouteConfig &&
+          runtimeType == other.runtimeType &&
+          routeName == other.routeName;
+
+  @override
+  int get hashCode => routeName.hashCode;
 }

@@ -12,31 +12,35 @@ final currentIndexProvider = StateProvider((ref) => 0);
 
 class _MainTab extends ConsumerWidget {
   const _MainTab({Key? key}) : super(key: key);
+  static final _titles = ["钱包", "资产", "我"];
+  static final _icons = [Icons.home, Icons.phone, Icons.email];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentIndex = ref.watch(currentIndexProvider);
+    final currentIndex = ref.watch<int>(currentIndexProvider);
+    final title = _titles[currentIndex];
     return Scaffold(
       appBar: AppBar(
-        title: const Text("TabBar"),
+        title: Text(title),
         centerTitle: true,
         leading: null,
         automaticallyImplyLeading: false,
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
         ),
       ),
       body: Text("Body $currentIndex"),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
-          Log.i("点击了 ", index);
+          Log.i("点击了的 ", index);
           ref.read(currentIndexProvider.state).state = index;
         },
-        items: const [
-          BottomNavigationBarItem(label: "钱包", icon: Icon(Icons.home)),
-          BottomNavigationBarItem(label: "资产", icon: Icon(Icons.phone)),
-          BottomNavigationBarItem(label: "我", icon: Icon(Icons.email))
+        items: [
+          for (var title in _titles)
+            BottomNavigationBarItem(
+                label: title, icon: Icon(_icons[_titles.indexOf(title)]))
         ],
       ),
     );

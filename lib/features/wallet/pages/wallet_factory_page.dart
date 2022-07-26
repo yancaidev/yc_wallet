@@ -16,13 +16,12 @@ class _WalletActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         centerTitle: true,
-        elevation: 0,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.white, // navigation bar color
-          statusBarIconBrightness: Brightness.dark, // status bar icons' color
+        backgroundColor: Theme.of(context).primaryColor,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Theme.of(context).primaryColor,
+          systemNavigationBarColor: Colors.purpleAccent, // navigation bar color
+          statusBarIconBrightness: Brightness.light, // status bar icons' color
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
       ),
@@ -46,12 +45,12 @@ class _WalletActions extends StatelessWidget {
                           .push(RouteConfig(RouteName.createWallet));
                     },
                     child: const Text("创建钱包")),
-                OutlinedButton(
-                    onPressed: () {
-                      YCRouterDetegate.of(context)
-                          .push(RouteConfig(RouteName.main));
-                    },
-                    child: const Text("跳过"))
+                // OutlinedButton(
+                //     onPressed: () {
+                //       YCRouterDetegate.of(context)
+                //           .push(RouteConfig(RouteName.main));
+                //     },
+                //     child: const Text("跳过")),
               ],
             )),
       ),

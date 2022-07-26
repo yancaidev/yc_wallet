@@ -6,6 +6,7 @@ class UserSettings {
   /// 是否显示新特性； true 显示， false 不显示
   static Future<bool> shouldShowIntro() async {
     final prefs = await SharedPreferences.getInstance();
+    // return true;
     return prefs.getBool(_UserSettingsKey.showIntro.name) ?? true;
   }
 

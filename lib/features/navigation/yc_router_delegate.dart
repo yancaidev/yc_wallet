@@ -43,7 +43,7 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
 
   @override
   Widget build(BuildContext context) {
-    final shouldShow = _ref.read(appStateProvider);
+    final shouldShow = _ref.watch(appStateProvider);
     _pushIfNotExists(
         RouteConfig(shouldShow ? RouteName.walletIntro : RouteName.main));
     return Navigator(
@@ -109,6 +109,12 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
     _pushIfNotExists(route);
     _routeHistory.removeAt(_routeHistory.length - 2);
     Log.i("替换后，栈顶  ${_routeHistory.last.routeName.name}");
+    notifyListeners();
+  }
+
+  void clearAndPush(RouteConfig route) {
+    _routeHistory.clear();
+    _routeHistory.add(route);
     notifyListeners();
   }
 

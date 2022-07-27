@@ -12,6 +12,9 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const SizedBox(
+            height: 30,
+          ),
           const Text("生成助记词"),
           const SizedBox(
             height: 10,

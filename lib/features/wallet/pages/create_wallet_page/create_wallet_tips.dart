@@ -13,7 +13,7 @@ class CreateWalletTips extends CreateWalletBaseStep {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(
-            height: 10,
+            height: 30,
           ),
           const Center(
             child: Text("温馨提醒"),

@@ -57,7 +57,7 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
       ),
       body: Column(
         children: [
-          _CreateWalletStepper(currentPage),
+          const _CreateWalletStepper(),
           Expanded(
               child: PageView(
             controller: _pageController,
@@ -81,11 +81,11 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
 }
 
 class _CreateWalletStepper extends ConsumerWidget {
-  final int position;
-  const _CreateWalletStepper(this.position, {Key? key}) : super(key: key);
+  const _CreateWalletStepper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final position = ref.watch(_currentStepProvider);
     return Center(
       child: DotsStepper(
         dotsCount: 5,

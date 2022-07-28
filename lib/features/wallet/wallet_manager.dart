@@ -1,7 +1,7 @@
 import 'dart:math';
 
+import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:web3dart/web3dart.dart';
-// import 'package:bip39/bip39.dart' as bip39;
 
 class WalletManager {
   // static Wallet newMnemonicWallet(String password) {
@@ -9,6 +9,17 @@ class WalletManager {
   //   final mnemonic =  bip39.generateMnemonic(strength: 256);
   //   return
   // }
+
+  WalletManager._internal();
+
+  static String generateMnemonic(int wordsCount) {
+    if (wordsCount == 24) {
+      return Mnemonic.generate(Language.english).sentence;
+    }
+    final random = Random.secure();
+    final entropy = List<int>.generate(16, (i) => random.nextInt(256));
+    return Mnemonic(entropy, Language.english).sentence;
+  }
 
   static Wallet generateWallet(String password) {
     Random random = Random.secure();

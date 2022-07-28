@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
-import 'package:yc_wallet/features/navigation/route_name.dart';
+import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_intro_page/widgets/feature_pager.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 
 class WalletIntroPage extends BasePage {
-  WalletIntroPage() : super(RouteName.walletIntro, const _WalletIntro());
+  WalletIntroPage(RouteConfig config) : super(config, const _WalletIntro());
 }
 
 class _WalletIntro extends StatelessWidget {

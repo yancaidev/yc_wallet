@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
+import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/import_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/main_tab_page.dart';
@@ -21,31 +22,26 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   final GlobalKey<NavigatorState> navigatorKey;
 
   /// Record opened routes history.
-  final List<RouteConfig> _routeHistory = List.of([]);
+  final List<RouteConfig> _routeHistory;
 
   /// `YCRouteDetegate` 构造函数，同时初始化 `navigationKey`
-  YCRouterDetegate(this._ref) : navigatorKey = GlobalKey<NavigatorState>();
+  YCRouterDetegate(this._ref)
+      : navigatorKey = GlobalKey<NavigatorState>(),
+        // App启动初始栈，如果已经才看了新特性，直接进入主页，否则进入新特性页面
+        _routeHistory = List.of([
+          _ref.read<bool>(appStateProvider)
+              ? RouteConfig(RouteName.walletIntro)
+              : RouteConfig(RouteName.main)
+        ]);
 
   @override
   RouteConfig? get currentConfiguration {
-    RouteConfig config;
-    if (_routeHistory.length > 2) {
-      config = _routeHistory.last;
-    } else {
-      final shouldShow = _ref.read(appStateProvider);
-      config = shouldShow
-          ? RouteConfig(RouteName.walletIntro)
-          : RouteConfig(RouteName.main);
-    }
-    Log.i("当前需要显示的是 ${config.routeName.name}");
-    return config;
+    Log.i("当前需要显示的是 ${_routeHistory.last.routeName}");
+    return _routeHistory.last;
   }
 
   @override
   Widget build(BuildContext context) {
-    final shouldShow = _ref.watch(appStateProvider);
-    _pushIfNotExists(
-        RouteConfig(shouldShow ? RouteName.walletIntro : RouteName.main));
     return Navigator(
       pages: _pages,
       onPopPage: (route, result) {
@@ -84,51 +80,65 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
     return delegate as YCRouterDetegate;
   }
 
-  Page _routeMapper(RouteConfig config) {
+  BasePage _routeMapper(RouteConfig config) {
     switch (config.routeName) {
       case RouteName.home:
-        return WalletFactoryPage();
+        return WalletFactoryPage(config);
       case RouteName.createWallet:
-        return CreateWalletPage();
+        return CreateWalletPage(config);
       case RouteName.importWallet:
-        return ImportWalletPage();
+        return ImportWalletPage(config);
       case RouteName.main:
-        return MainTabPage();
+        return MainTabPage(config);
       case RouteName.walletIntro:
-        return WalletIntroPage();
+        return WalletIntroPage(config);
       default:
         throw UnsupportedError("不支持跳转到$config");
     }
   }
 
-  List<Page> get _pages =>
-      _routeHistory.map((config) => _routeMapper(config)).toList();
+  List<BasePage> get _pages {
+    final pages = List<BasePage>.of([]);
+    for (int i = 0; i < _routeHistory.length; i++) {
+      final page = _routeMapper(_routeHistory[i]);
+      final config = _routeHistory[i];
+      if (i == _routeHistory.length - 1) {
+        if (!config.isTop) {
+          page.onBecomingTop();
+        }
+        config.makeTop(true);
+      } else {
+        if (config.isTop) {
+          page.onLeavingTop();
+        }
+        config.makeTop(false);
+      }
+      pages.add(page);
+    }
+    return pages;
+  }
 
+  /// 将新路由放在栈顶，将旧的栈顶移除掉
   void replaceTop(RouteConfig route) {
-    Log.i("替换前，栈顶 ${_routeHistory.last.routeName.name}");
-    _pushIfNotExists(route);
+    _routeHistory.add(route);
     _routeHistory.removeAt(_routeHistory.length - 2);
-    Log.i("替换后，栈顶  ${_routeHistory.last.routeName.name}");
     notifyListeners();
   }
 
+  /// 清空路由，仅保留当前路由
   void clearAndPush(RouteConfig route) {
     _routeHistory.clear();
     _routeHistory.add(route);
     notifyListeners();
   }
 
+  /// 新路由放在栈顶
   void push(RouteConfig route) {
     _routeHistory.add(route);
     notifyListeners();
   }
 
-  void _pushIfNotExists(RouteConfig route) {
-    if (_routeHistory.contains(route)) return;
-    _routeHistory.add(route);
-    // notifyListeners();
-  }
-
+  /// 移除栈顶
   void pop() {
     Log.i("pop is called");
     _popIfNotRoot();

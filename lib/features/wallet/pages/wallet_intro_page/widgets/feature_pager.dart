@@ -72,9 +72,7 @@ class _FeaturePageDotsIndicator extends ConsumerWidget {
       : super(key: key);
 
   void _save(BuildContext context, WidgetRef ref) {
-    ref.read(appStateProvider.state).state = false;
-    UserSettings.setShowIntro(false).then((value) =>
-        YCRouterDetegate.of(context).replaceTop(RouteConfig(RouteName.main)));
+    YCRouterDetegate.of(context).push(RouteConfig.home());
   }
 
   @override

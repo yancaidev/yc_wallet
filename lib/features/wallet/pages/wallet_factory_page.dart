@@ -4,9 +4,10 @@ import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
+import 'package:yc_wallet/share/quick_import.dart';
 
 class WalletFactoryPage extends BasePage {
-  WalletFactoryPage() : super(RouteName.home, const _WalletActions());
+  WalletFactoryPage(RouteConfig config) : super(config, const _WalletActions());
 }
 
 class _WalletActions extends StatelessWidget {
@@ -17,6 +18,7 @@ class _WalletActions extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        leading: YCBackButton(),
         backgroundColor: Theme.of(context).primaryColor,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Theme.of(context).primaryColor,
@@ -33,18 +35,58 @@ class _WalletActions extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton(
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        YCRouterDetegate.of(context)
+                            .push(RouteConfig(RouteName.createWallet));
+                      },
+                      child: const Text(
+                        "创建新钱包",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                        shadowColor:
+                            MaterialStateProperty.all<Color>(Colors.black12),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black12)),
                     onPressed: () {
                       YCRouterDetegate.of(context)
                           .push(RouteConfig(RouteName.importWallet));
                     },
-                    child: const Text("导入钱包")),
-                ElevatedButton(
-                    onPressed: () {
-                      YCRouterDetegate.of(context)
-                          .push(RouteConfig(RouteName.createWallet));
-                    },
-                    child: const Text("创建钱包")),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "导入钱包",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "支持任意钱包的助记词或私钥导入",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
                 // OutlinedButton(
                 //     onPressed: () {
                 //       YCRouterDetegate.of(context)

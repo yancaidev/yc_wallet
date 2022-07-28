@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:yc_wallet/features/navigation/route_name.dart';
+import 'package:yc_wallet/features/navigation/route_config.dart';
+import 'package:yc_wallet/share/quick_import.dart';
 
 abstract class BasePage<T> extends MaterialPage<T> {
-  BasePage(RouteName routeName, Widget child,
+  final RouteConfig config;
+  bool? isRouteCreated;
+
+  BasePage(this.config, Widget child,
       {bool maintainState = true,
       bool fullscreenDialog = true,
       Object? arguments,
@@ -11,10 +14,24 @@ abstract class BasePage<T> extends MaterialPage<T> {
             child: child,
             maintainState: maintainState,
             fullscreenDialog: fullscreenDialog,
-            key: ValueKey(routeName.path),
-            name: routeName.path,
+            key: ValueKey(config.routeName.path),
+            name: config.routeName.path,
             arguments: arguments,
             restorationId: restorationId);
+
+  @override
+  Route<T> createRoute(BuildContext context) {
+    config.isRouteCreated = true;
+    return super.createRoute(context);
+  }
+
+  void onBecomingTop() {
+    Log.i("$this is at the top now. ${config.isRouteCreated}");
+  }
+
+  void onLeavingTop() {
+    Log.i("$this is not the top route any more.");
+  }
 }
 
 /// 自定义动画效果

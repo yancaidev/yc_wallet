@@ -1,5 +1,4 @@
 import 'package:yc_wallet/features/navigation/route_config.dart';
-import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 
@@ -7,7 +6,7 @@ class CreateWalletVerifyPassword extends StatelessWidget {
   const CreateWalletVerifyPassword({Key? key}) : super(key: key);
 
   void navigateToMainPage(BuildContext context) {
-    YCRouterDetegate.of(context).push(RouteConfig(RouteName.main));
+    YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
   }
 
   @override

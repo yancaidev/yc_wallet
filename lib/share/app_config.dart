@@ -12,4 +12,6 @@ class AppConfig {
     }
   }
   static AppConfig get shared => _instance;
+
+  bool get isReleaseMode => kReleaseMode;
 }

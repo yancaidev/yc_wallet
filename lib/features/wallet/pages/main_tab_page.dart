@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yc_wallet/features/navigation/route_name.dart';
+import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 
 class MainTabPage extends BasePage {
-  MainTabPage() : super(RouteName.main, const _MainTab());
+  MainTabPage(RouteConfig config) : super(config, const _MainTab());
 }
 
 final currentIndexProvider = StateProvider((ref) => 0);

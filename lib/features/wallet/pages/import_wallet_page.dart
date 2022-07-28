@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:yc_wallet/features/navigation/route_name.dart';
+import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 
 class ImportWalletPage extends BasePage {
-  ImportWalletPage() : super(RouteName.importWallet, const _ImportWallet());
+  ImportWalletPage(RouteConfig config) : super(config, const _ImportWallet());
 }
 
 class _ImportWallet extends StatelessWidget {

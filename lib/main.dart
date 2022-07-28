@@ -68,9 +68,13 @@ class _MyAppState extends ConsumerState<MyApp> {
       data: (data) {
         Log.i("应用状态初始化成功，加载路由！");
         return MaterialApp.router(
-            theme: ThemeData.from(colorScheme: const ColorScheme.light()),
-            routeInformationParser: routeInformationParser,
-            routerDelegate: _routerDetegate!);
+          theme:
+              ThemeData.from(colorScheme: const ColorScheme.light()).copyWith(
+            buttonTheme: const ButtonThemeData(height: 56),
+          ),
+          routeInformationParser: routeInformationParser,
+          routerDelegate: _routerDetegate!,
+        );
       },
     );
   }

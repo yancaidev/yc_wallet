@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/widgets/base_app_bar.dart';
+import 'package:yc_wallet/widgets/buttons.dart';
 
 class WalletFactoryPage extends BasePage {
   WalletFactoryPage(RouteConfig config) : super(config, const _WalletActions());
@@ -13,20 +14,19 @@ class WalletFactoryPage extends BasePage {
 class _WalletActions extends StatelessWidget {
   const _WalletActions({Key? key}) : super(key: key);
 
+  void _navigateToCreateWalletPage(BuildContext context) {
+    YCRouterDetegate.of(context).push(RouteConfig(RouteName.createWallet));
+  }
+
+  void _navigateToImportWalletPage(BuildContext context) {
+    YCRouterDetegate.of(context).push(RouteConfig(RouteName.importWallet));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        leading: YCBackButton(),
-        backgroundColor: Theme.of(context).primaryColor,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Theme.of(context).primaryColor,
-          systemNavigationBarColor: Colors.purpleAccent, // navigation bar color
-          statusBarIconBrightness: Brightness.light, // status bar icons' color
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ),
-      ),
+      appBar: const BaseAppBar(
+          lightBackground: true, backgroundColor: Colors.white, elevation: 0),
       body: Align(
         alignment: FractionalOffset.bottomCenter,
         child: Padding(
@@ -35,56 +35,19 @@ class _WalletActions extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                elevatedButton(
+                  "创建新钱包",
+                  onPressed: () => _navigateToCreateWalletPage(context),
+                ),
+                const SizedBox(height: 20),
                 SizedBox(
                   height: 56,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        YCRouterDetegate.of(context)
-                            .push(RouteConfig(RouteName.createWallet));
-                      },
-                      child: const Text(
-                        "创建新钱包",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  height: 56,
-                  child: ElevatedButton(
+                  child: TextButton(
                     style: ButtonStyle(
-                        shadowColor:
-                            MaterialStateProperty.all<Color>(Colors.black12),
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.black12)),
-                    onPressed: () {
-                      YCRouterDetegate.of(context)
-                          .push(RouteConfig(RouteName.importWallet));
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "导入钱包",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "支持任意钱包的助记词或私钥导入",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                          ),
-                        )
-                      ],
-                    ),
+                    onPressed: () => _navigateToImportWalletPage(context),
+                    child: const _DoubleTitlesButton(),
                   ),
                 ),
                 // OutlinedButton(
@@ -98,4 +61,34 @@ class _WalletActions extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DoubleTitlesButton extends StatelessWidget {
+  const _DoubleTitlesButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        _MainTitleOfButton("导入钱包"),
+        _SubtitleOfButton("支持任意钱包的助记词或私钥导入")
+      ],
+    );
+  }
+}
+
+class _MainTitleOfButton extends Text {
+  const _MainTitleOfButton(String data)
+      : super(data,
+            style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold));
+}
+
+class _SubtitleOfButton extends Text {
+  const _SubtitleOfButton(String data)
+      : super(data,
+            style: const TextStyle(fontSize: 12, color: Colors.black54));
 }

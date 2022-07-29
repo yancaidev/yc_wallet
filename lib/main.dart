@@ -1,3 +1,4 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/navigation/yc_route_infomation_parser.dart';
@@ -74,6 +75,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           ),
           routeInformationParser: routeInformationParser,
           routerDelegate: _routerDetegate!,
+          builder: EasyLoading.init(),
         );
       },
     );

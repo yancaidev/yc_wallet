@@ -15,6 +15,7 @@ import 'package:yc_wallet/utils/log_utils.dart';
 class YCRouterDetegate extends RouterDelegate<RouteConfig>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<RouteConfig> {
   final WidgetRef _ref;
+  final List<BasePage> allPages;
 
   ///  `navigatorKey` 用于获取当前的 `navigator`
   /// 一定要用 `navigatorKey` 创建 Navigator 对象
@@ -28,11 +29,20 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   YCRouterDetegate(this._ref)
       : navigatorKey = GlobalKey<NavigatorState>(),
         // App启动初始栈，如果已经才看了新特性，直接进入主页，否则进入新特性页面
-        _routeHistory = List.of([
-          _ref.read<bool>(appStateProvider)
-              ? RouteConfig(RouteName.walletIntro)
-              : RouteConfig(RouteName.main)
-        ]);
+        _routeHistory = List.of(
+          [
+            _ref.read<bool>(appStateProvider)
+                ? RouteConfig(RouteName.walletIntro)
+                : RouteConfig(RouteName.main)
+          ],
+        ),
+        allPages = List.of(
+          [
+            _ref.read<bool>(appStateProvider)
+                ? WalletIntroPage(RouteConfig(RouteName.walletIntro))
+                : MainTabPage(RouteConfig.main())
+          ],
+        );
 
   @override
   RouteConfig? get currentConfiguration {
@@ -43,9 +53,14 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      pages: _pages,
+      pages: allPages.toList(),
       onPopPage: (route, result) {
         Log.i("onPopPage is called");
+        if (!allPages.last.onBackPressed()) {
+          Log.i(
+              "${allPages.last.config} refused to go back when click navigation back button.");
+          return false;
+        }
         if (!route.didPop(result)) {
           return false;
         }
@@ -60,17 +75,20 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   }
 
   @override
-  Future<bool> popRoute() {
+  Future<bool> popRoute() async {
     Log.i("popRoute is called. ${_routeHistory.length}");
     if (_routeHistory.length == 1) {
-      // LogUtils.i("Prevent navigating back because it's root route now.");
+      Log.i("Prevent navigating back because it's root route now.");
       Log.i("Show confirm exit action.");
     } else {
-      pop();
-      Log.i(
-          "Navigating back and current route depth is ${_routeHistory.length}");
+      final shouldGoBack = allPages.last.onBackPressed();
+      if (shouldGoBack) {
+        pop();
+      } else {
+        Log.i("${allPages.last.config} resused to go back;");
+      }
     }
-    return Future.value(true);
+    return true;
   }
 
   /// A convenient way to retrive YCRouterDelegate instance
@@ -97,44 +115,28 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
     }
   }
 
-  List<BasePage> get _pages {
-    final pages = List<BasePage>.of([]);
-    for (int i = 0; i < _routeHistory.length; i++) {
-      final page = _routeMapper(_routeHistory[i]);
-      final config = _routeHistory[i];
-      if (i == _routeHistory.length - 1) {
-        if (!config.isTop) {
-          page.onBecomingTop();
-        }
-        config.makeTop(true);
-      } else {
-        if (config.isTop) {
-          page.onLeavingTop();
-        }
-        config.makeTop(false);
-      }
-      pages.add(page);
-    }
-    return pages;
-  }
-
   /// 将新路由放在栈顶，将旧的栈顶移除掉
   void replaceTop(RouteConfig route) {
     _routeHistory.add(route);
     _routeHistory.removeAt(_routeHistory.length - 2);
+    allPages.add(_routeMapper(route));
+    allPages.removeAt(allPages.length - 2);
     notifyListeners();
   }
 
   /// 清空路由，仅保留当前路由
   void clearAndPush(RouteConfig route) {
     _routeHistory.clear();
+    allPages.clear();
     _routeHistory.add(route);
+    allPages.add(_routeMapper(route));
     notifyListeners();
   }
 
   /// 新路由放在栈顶
   void push(RouteConfig route) {
     _routeHistory.add(route);
+    allPages.add(_routeMapper(route));
     notifyListeners();
   }
 
@@ -147,6 +149,7 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
   bool _popIfNotRoot() {
     if (_routeHistory.length > 1) {
       _routeHistory.removeLast();
+      allPages.removeLast();
       notifyListeners();
       return true;
     }

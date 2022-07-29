@@ -1,9 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 
 abstract class BasePage<T> extends MaterialPage<T> {
   final RouteConfig config;
-  bool? isRouteCreated;
 
   BasePage(this.config, Widget child,
       {bool maintainState = true,
@@ -31,6 +31,10 @@ abstract class BasePage<T> extends MaterialPage<T> {
 
   void onLeavingTop() {
     Log.i("$this is not the top route any more.");
+  }
+
+  bool onBackPressed() {
+    return true;
   }
 }
 

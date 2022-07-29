@@ -63,6 +63,7 @@ dependencies:
   animated_text_kit: ^4.2.1
   shared_preferences: ^2.0.15
   dots_indicator: ^2.1.0
+  equatable: ^2.0.3
 
 dev_dependencies:
   flutter_test:

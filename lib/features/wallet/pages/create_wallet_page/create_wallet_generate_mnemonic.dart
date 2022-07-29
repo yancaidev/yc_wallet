@@ -1,10 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:yc_wallet/features/navigation/route_config.dart';
+import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/widgets/buttons.dart';
+import 'package:yc_wallet/widgets/size_box_height_only.dart';
+import 'package:yc_wallet/widgets/text_page_title.dart';
+
+final mnemonicsProvider = StateProvider<List<String>>(
+    (ref) => WalletManager.generateMnemonicWords(12));
+final shouldHideMnemonics = StateProvider((ref) => false);
 
 class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
-  const CreateWalletGenerateMnemonic({Key? key}) : super(1, key: key);
+  final GlobalKey globalKey = GlobalKey<_BackupMnemonicState>();
+  CreateWalletGenerateMnemonic({Key? key}) : super(1, key: key);
+
+  void _onPressAllreadyBackupButton(WidgetRef ref) {
+    ref.read(shouldHideMnemonics.state).state = true;
+    nextStep(ref);
+  }
+
+  void _onSkipBackupMnemonic(BuildContext context) {
+    YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,71 +37,39 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const Text(
-                    "备份助记词",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBoxHeightOnly(30),
+                  const TextPageTitle("备份助记词"),
+                  const SizedBox(height: 10),
                   const Text("请按顺序抄录以下助记词，下一步将验证"),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const _BackupMnemonic(),
+                  const SizedBox(height: 30),
+                  _BackupMnemonic(key: globalKey),
                 ],
               ),
             ),
           ),
-          SizedBox(
-            height: 56,
-            child: OutlinedButton(
-              onPressed: () {},
-              child: const Text(
-                "稍后备份",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.black87),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () => nextStep(ref),
-              child: const Text(
-                "我已备份",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
+          outlinedButton("稍后备份",
+              onPressed: () => _onSkipBackupMnemonic(context)),
+          const SizedBox(height: 10),
+          elevatedButton("我已备份",
+              onPressed: () => _onPressAllreadyBackupButton(ref)),
+          const SizedBox(height: 30),
         ],
       ),
     );
   }
 }
 
-class _BackupMnemonic extends StatefulWidget {
+class _BackupMnemonic extends ConsumerStatefulWidget {
   const _BackupMnemonic({Key? key}) : super(key: key);
 
   @override
-  State<_BackupMnemonic> createState() => _BackupMnemonicState();
+  ConsumerState<_BackupMnemonic> createState() => _BackupMnemonicState();
 }
 
-class _BackupMnemonicState extends State<_BackupMnemonic> {
+class _BackupMnemonicState extends ConsumerState<_BackupMnemonic> {
   final int _columns = 3;
 
-  late List<String> _mnemonics;
+  List<String> get _mnemonics => ref.read(mnemonicsProvider.state).state;
 
   int get _wordsCount => _mnemonics.length;
 
@@ -90,69 +77,84 @@ class _BackupMnemonicState extends State<_BackupMnemonic> {
 
   int get _nextWordsCount => _is12Words ? 24 : 12;
 
-  void _changeWordsCount() {
-    _changeMnemonics(_is12Words ? 24 : 12);
+  void _changeWordsCount(WidgetRef ref) {
+    ref.read(shouldHideMnemonics.state).state = false;
+    _changeMnemonics(ref, _is12Words ? 24 : 12);
   }
 
   List<String> _generateMnemonics(int wordsCount) {
+    ref.read(shouldHideMnemonics.state).state = false;
     final sentence = WalletManager.generateMnemonic(wordsCount);
     return sentence.split(" ");
   }
 
-  void _changeMnemonics(int wordsCount) {
-    setState(() {
-      _mnemonics = _generateMnemonics(wordsCount);
-    });
+  void _changeMnemonics(WidgetRef ref, int wordsCount) {
+    ref.read(mnemonicsProvider.state).state = _generateMnemonics(wordsCount);
   }
 
   @override
   void initState() {
     super.initState();
-    _mnemonics = _generateMnemonics(12);
+    Log.i("init state..........");
   }
 
   @override
   Widget build(BuildContext context) {
+    Log.i("build.............");
+    final mnemonicWords = ref.watch(mnemonicsProvider);
+    final shouldHideMnemonic = ref.watch(shouldHideMnemonics);
     return Column(
       children: [
-        Table(
-          border: _MnemonicTableBorder.mnemonicTableBorder(),
-          children: [
-            for (int row = 0; row < _wordsCount / _columns; row++)
-              TableRow(children: [
-                for (int column = 0; column < _columns; column++)
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${row * 3 + column + 1}",
-                          style: const TextStyle(color: Colors.black38),
-                        ),
-                        Text(
-                          _mnemonics[row * 3 + column],
-                          style: const TextStyle(fontSize: 16),
+        !shouldHideMnemonic
+            ? Table(
+                border: _MnemonicTableBorder.mnemonicTableBorder(),
+                children: [
+                  for (int row = 0; row < _wordsCount / _columns; row++)
+                    TableRow(children: [
+                      for (int column = 0; column < _columns; column++)
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("${row * 3 + column + 1}",
+                                  style:
+                                      const TextStyle(color: Colors.black38)),
+                              Text(mnemonicWords[row * 3 + column],
+                                  style: const TextStyle(fontSize: 16)),
+                            ],
+                          ),
                         )
-                      ],
-                    ),
-                  )
-              ]),
-          ],
-        ),
+                    ]),
+                ],
+              )
+            : Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(6)),
+                child: const Text("隐藏"),
+              ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TextButton(
-                onPressed: _changeWordsCount,
+                onPressed: () => _changeWordsCount(ref),
                 child: Text("切换 $_nextWordsCount 位助记词")),
             TextButton(
-                onPressed: () => _changeMnemonics(_wordsCount),
+                onPressed: () => _changeMnemonics(ref, _wordsCount),
                 child: const Text("换一组"))
           ],
         ),
       ],
     );
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    Log.i("deactive……...........");
   }
 }
 

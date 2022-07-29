@@ -21,6 +21,10 @@ class WalletManager {
     return Mnemonic(entropy, Language.english).sentence;
   }
 
+  static List<String> generateMnemonicWords(int wordsCount) {
+    return generateMnemonic(12).split(" ");
+  }
+
   static Wallet generateWallet(String password) {
     Random random = Random.secure();
     EthPrivateKey privateKey = EthPrivateKey.createRandom(random);

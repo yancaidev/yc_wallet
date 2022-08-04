@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
+import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
+import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_verify_password.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/utils/scroll_behavior_none.dart';
 import 'package:yc_wallet/widgets/dots_stepper.dart';
@@ -93,6 +95,8 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
             CreateWalletTips(),
             CreateWalletGenerateMnemonic(),
             CreateWalletVerifyMnemonic(),
+            const CreateWalletSetPassword(),
+            const CreateWalletVerifyPassword()
           ],
           onPageChanged: (page) {
             ref.read(_currentStepProvider.state).update((state) => page);
@@ -111,7 +115,7 @@ class _CreateWalletStepper extends ConsumerWidget {
     final position = ref.watch(_currentStepProvider);
     return Center(
       child: DotsStepper(
-        dotsCount: 3,
+        dotsCount: 5,
         position: position.toDouble(),
         decorator: const DotsDecorator(
             color: Colors.black26,

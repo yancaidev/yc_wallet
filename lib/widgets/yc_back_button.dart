@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class YCBackButton extends BackButton {
-  const YCBackButton({Key? key, super.color, super.onPressed})
-      : super(key: key);
+  const YCBackButton({Key? key, Color? color, super.onPressed})
+      : super(key: key, color: color);
 
   @override
   Widget build(BuildContext context) {

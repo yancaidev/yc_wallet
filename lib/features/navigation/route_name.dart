@@ -4,7 +4,9 @@ enum RouteName {
   createWallet,
   importWallet,
   main,
-  walletIntro;
+  walletIntro,
+  setWalletPassword,
+  confirmWalletPassword;
 
   static RouteName fromPath(String path) {
     switch (path) {
@@ -13,7 +15,7 @@ enum RouteName {
       case "/404":
         return RouteName.notFound;
       default:
-        return values.firstWhere((routeName) => routeName.name == "/path",
+        return values.firstWhere((routeName) => routeName.name == "/$path",
             orElse: () => RouteName.notFound);
     }
   }

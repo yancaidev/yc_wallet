@@ -55,7 +55,7 @@ import 'package:yc_wallet/share/quick_import.dart';
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool lightBackground;
   final String textTitle;
-  final Widget leading;
+  final Widget? leading;
   final bool automaticallyImplyLeading;
   final Widget? title;
   final List<Widget>? actions;
@@ -84,7 +84,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     Key? key,
     this.lightBackground = false,
     this.textTitle = "",
-    this.leading = const YCBackButton(),
+    this.leading,
     this.automaticallyImplyLeading = true,
     this.title,
     this.actions,
@@ -114,9 +114,15 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       key: key,
-      leading: leading,
+      leading: leading ??
+          YCBackButton(color: lightBackground ? Colors.black : Colors.white),
       automaticallyImplyLeading: automaticallyImplyLeading,
-      title: title ?? Text(textTitle),
+      title: title ??
+          Text(
+            textTitle,
+            style:
+                TextStyle(color: lightBackground ? Colors.black : Colors.white),
+          ),
       actions: actions,
       flexibleSpace: flexibleSpace,
       bottom: bottom,
@@ -124,7 +130,8 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       shadowColor: shadowColor,
       shape: shape,
       backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
+      foregroundColor:
+          foregroundColor ?? (lightBackground ? Colors.black : Colors.white),
       iconTheme: iconTheme,
       actionsIconTheme: actionsIconTheme,
       primary: primary,

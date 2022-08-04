@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
+import 'package:yc_wallet/features/wallet/pages/confirm_wallet_password_page/index.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/import_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/main_tab_page.dart';
+import 'package:yc_wallet/features/wallet/pages/set_wallet_password_page/index.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_factory_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_intro_page/wallet_intro_page.dart';
 import 'package:yc_wallet/main.dart';
@@ -110,7 +112,12 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
         return MainTabPage(config);
       case RouteName.walletIntro:
         return WalletIntroPage(config);
+      case RouteName.setWalletPassword:
+        return SetWalletPasswordPage();
+      case RouteName.confirmWalletPassword:
+        return ConfirmWalletPasswordPage();
       default:
+        Log.e("不支持跳转到 $config");
         throw UnsupportedError("不支持跳转到$config");
     }
   }

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
+import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_generate_mnemonic.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
@@ -10,6 +11,7 @@ import 'package:yc_wallet/widgets/buttons.dart';
 import 'package:yc_wallet/widgets/text_page_title.dart';
 import 'package:yc_wallet/extensions/list_ext.dart';
 
+/// 创建钱包第三步 - 验证助记词
 class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
   final _mnemonicStyle = const TextStyle(color: Colors.black87, fontSize: 16);
   final _selectedMnemonicStyle =
@@ -75,15 +77,23 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
     });
   }
 
-  void _onClickConfirmButton(WidgetRef ref, bool isRight) {
+  /// 点击了确认按钮，如果助记词验证成功，跳转到设置密码页面，否则重新选择助记词，
+  /// 验证用户确实备份了助记词
+  void _onClickConfirmButton(
+      BuildContext context, WidgetRef ref, bool isRight) {
     Log.i("Confirm button is clicked. Mnemonic is $isRight");
     if (!isRight) {
       ref
           .read(_pickedWordsProvider.state)
           .update((state) => List.filled(3, null));
-    } else {}
+    } else {
+      // YCRouterDetegate.of(context)
+      //     .push(RouteConfig(RouteName.setWalletPassword));
+      nextStep(ref);
+    }
   }
 
+  /// 点击了“稍候备份”按钮，跳过助记词验证
   void _skipBackupMnemonic(BuildContext context) {
     YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
   }
@@ -100,10 +110,9 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
     const double itemHeight = 64;
     final double itemWidth = (size.width - 30) / 3.0;
     final ratio = itemWidth / itemHeight;
-    final rightWords = mnemonicWords
-        .where((element) =>
-            mnemonicIndexes.contains(messupWords.firstIndex(element)))
-        .join(" ");
+    final rightWords =
+        mnemonicIndexes.map((index) => mnemonicWords[index]).toList().join(" ");
+    Log.i("正确的助记词验证词是 $rightWords");
     final selectedWords = pickedWords.join(" ");
     final isRight = rightWords == selectedWords;
 
@@ -161,7 +170,7 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
           elevatedButton(
             "确认",
             onPressed: isConfirmButtonEnable
-                ? () => _onClickConfirmButton(ref, isRight)
+                ? () => _onClickConfirmButton(context, ref, isRight)
                 : null,
           ),
         ],

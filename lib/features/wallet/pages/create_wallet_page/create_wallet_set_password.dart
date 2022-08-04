@@ -1,3 +1,5 @@
+import 'package:flutter/gestures.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
@@ -9,6 +11,8 @@ final passwordProvider = StateProvider<String>((ref) {
   return "";
 });
 
+final hidePasswordProvider = StateProvider(((ref) => true));
+
 final passwordInputReg = RegExp(r"^\d{0,6}$");
 final passwordReg = RegExp(r"^\d{6}$");
 
@@ -17,7 +21,8 @@ class CreateWalletSetPassword extends CreateWalletBaseStep {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final grayColor = const Color(0xffeeeeee);
+    final hidePassowd = ref.watch(hidePasswordProvider);
+    const grayColor = Color(0xffeeeeee);
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
       child: Scaffold(
@@ -35,19 +40,28 @@ class CreateWalletSetPassword extends CreateWalletBaseStep {
                     children: [
                       const Text("设置 6 位纯数字密码"),
                       const SizedBox(width: 10),
-                      const Icon(Icons.visibility_off)
+                      GestureDetector(
+                        child: Icon(hidePassowd
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined),
+                        onTap: () {
+                          ref
+                              .read(hidePasswordProvider.state)
+                              .update((state) => !state);
+                        },
+                      )
                     ],
                   ),
                   const SizedBox(height: 10),
                   PinCodeTextField(
-                    key: GlobalKey(),
+                    // key: GlobalKey(),
                     appContext: context,
                     pastedTextStyle: TextStyle(
                       color: Colors.green.shade600,
                       fontWeight: FontWeight.bold,
                     ),
                     length: 6,
-                    obscureText: true,
+                    obscureText: hidePassowd,
                     blinkWhenObscuring: true,
                     animationType: AnimationType.fade,
                     autoFocus: true,
@@ -85,6 +99,7 @@ class CreateWalletSetPassword extends CreateWalletBaseStep {
                       Log.i("输入完成，输入的密码为 $password");
                       if (!Validator.shared.isWalletPassword(password)) {
                         Log.e("输入的密码验证不通过 $password");
+                        EasyLoading.showToast("只能输入纯数字");
                         return;
                       }
                       ref

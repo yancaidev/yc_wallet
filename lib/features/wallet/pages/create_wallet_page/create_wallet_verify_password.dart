@@ -1,3 +1,4 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
@@ -14,7 +15,8 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final grayColor = const Color(0xffeeeeee);
+    final hidePassowd = ref.watch(hidePasswordProvider);
+    const grayColor = Color(0xffeeeeee);
 
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
@@ -33,19 +35,27 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
                     children: [
                       const Text("验证 6 位纯数字密码"),
                       const SizedBox(width: 10),
-                      const Icon(Icons.visibility_off)
+                      GestureDetector(
+                        child: Icon(hidePassowd
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined),
+                        onTap: () {
+                          ref
+                              .read(hidePasswordProvider.state)
+                              .update((state) => !state);
+                        },
+                      )
                     ],
                   ),
                   const SizedBox(height: 10),
                   PinCodeTextField(
-                    key: GlobalKey(),
                     appContext: context,
                     pastedTextStyle: TextStyle(
                       color: Colors.green.shade600,
                       fontWeight: FontWeight.bold,
                     ),
                     length: 6,
-                    obscureText: true,
+                    obscureText: hidePassowd,
                     blinkWhenObscuring: true,
                     animationType: AnimationType.fade,
                     autoFocus: true,
@@ -82,6 +92,7 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
                       Log.i("验证密码输入完成，输入的密码为 $password");
                       final pwd = ref.read(passwordProvider);
                       if (pwd != password) {
+                        EasyLoading.showToast("两次输入的密码不一致");
                         Log.e("两次输入的密码不一致，请重新输入");
                         return;
                       }

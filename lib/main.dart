@@ -72,7 +72,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           theme: ThemeData.from(colorScheme: const ColorScheme.light())
               .copyWith(
                   buttonTheme: const ButtonThemeData(height: 56),
-                  appBarTheme: AppBarTheme(
+                  appBarTheme: const AppBarTheme(
                       titleTextStyle: TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold))),
           routeInformationParser: routeInformationParser,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
+import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/widgets/base_app_bar.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
@@ -11,7 +13,7 @@ class WalletFactoryPage extends BasePage {
   WalletFactoryPage(RouteConfig config) : super(config, const _WalletActions());
 }
 
-class _WalletActions extends StatelessWidget {
+class _WalletActions extends ConsumerWidget {
   const _WalletActions({Key? key}) : super(key: key);
 
   void _navigateToCreateWalletPage(BuildContext context) {
@@ -22,8 +24,13 @@ class _WalletActions extends StatelessWidget {
     YCRouterDetegate.of(context).push(RouteConfig(RouteName.importWallet));
   }
 
+  void _navToSetPasswordPage(BuildContext context, WidgetRef ref) {
+    ref.refresh(hidePasswordProvider);
+    YCRouterDetegate.of(context).push(RouteConfig(RouteName.setWalletPassword));
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: const BaseAppBar(
           lightBackground: true, backgroundColor: Colors.white, elevation: 0),
@@ -46,7 +53,7 @@ class _WalletActions extends StatelessWidget {
                     style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.black12)),
-                    onPressed: () => _navigateToImportWalletPage(context),
+                    onPressed: () => _navToSetPasswordPage(context, ref),
                     child: const _DoubleTitlesButton(),
                   ),
                 ),

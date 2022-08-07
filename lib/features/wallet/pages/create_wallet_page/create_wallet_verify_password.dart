@@ -1,4 +1,3 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
@@ -11,7 +10,9 @@ import 'package:yc_wallet/widgets/text_page_title.dart';
 import 'create_wallet_set_password.dart';
 
 class CreateWalletVerifyPassword extends CreateWalletBaseStep {
-  const CreateWalletVerifyPassword({Key? key}) : super(4, key: key);
+  final void Function() onPasswordSetted;
+  CreateWalletVerifyPassword(this.onPasswordSetted, {Key? key})
+      : super(4, key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -92,12 +93,13 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
                       Log.i("验证密码输入完成，输入的密码为 $password");
                       final pwd = ref.read(passwordProvider);
                       if (pwd != password) {
-                        EasyLoading.showToast("两次输入的密码不一致");
-                        Log.e("两次输入的密码不一致，请重新输入");
+                        showToast("两次输入的密码不一致");
+                        Log.e("两次输入的密码不一致，请重新输入", context);
                         return;
                       }
-                      YCRouterDetegate.of(context)
-                          .clearAndPush(RouteConfig.main());
+                      onPasswordSetted();
+                      // YCRouterDetegate.of(context)
+                      // .clearAndPush(RouteConfig.main());
                     },
                     // onTap: () {
                     //   print("Pressed");

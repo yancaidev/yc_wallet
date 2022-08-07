@@ -13,17 +13,11 @@ final mnemonicsProvider = StateProvider<List<String>>(
 final shouldHideMnemonics = StateProvider((ref) => false);
 
 class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
-  final GlobalKey globalKey = GlobalKey<_BackupMnemonicState>();
-  CreateWalletGenerateMnemonic({Key? key}) : super(1, key: key);
-
-  void _onPressAllreadyBackupButton(WidgetRef ref) {
-    ref.read(shouldHideMnemonics.state).state = true;
-    nextStep(ref);
-  }
-
-  void _onSkipBackupMnemonic(BuildContext context) {
-    YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
-  }
+  final void Function() onSkipBackupMnemonic;
+  final void Function() onBackupMnemonic;
+  CreateWalletGenerateMnemonic(this.onSkipBackupMnemonic, this.onBackupMnemonic,
+      {Key? key})
+      : super(1, key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,16 +36,14 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
                   const SizedBox(height: 10),
                   const Text("请按顺序抄录以下助记词，下一步将验证"),
                   const SizedBox(height: 30),
-                  _BackupMnemonic(key: globalKey),
+                  const _BackupMnemonic(),
                 ],
               ),
             ),
           ),
-          outlinedButton("稍后备份",
-              onPressed: () => _onSkipBackupMnemonic(context)),
+          outlinedButton("稍后备份", onPressed: onSkipBackupMnemonic),
           const SizedBox(height: 10),
-          elevatedButton("我已备份",
-              onPressed: () => _onPressAllreadyBackupButton(ref)),
+          elevatedButton("我已备份", onPressed: onBackupMnemonic),
           const SizedBox(height: 30),
         ],
       ),

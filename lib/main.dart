@@ -1,5 +1,6 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/navigation/yc_route_infomation_parser.dart';
 import 'package:yc_wallet/share/quick_import.dart';
@@ -77,7 +78,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                           fontSize: 20, fontWeight: FontWeight.bold))),
           routeInformationParser: routeInformationParser,
           routerDelegate: _routerDetegate!,
-          builder: EasyLoading.init(),
+          builder: FlutterSmartDialog.init(),
         );
       },
     );

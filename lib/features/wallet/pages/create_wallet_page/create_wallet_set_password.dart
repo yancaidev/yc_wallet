@@ -1,5 +1,4 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
@@ -12,12 +11,13 @@ final passwordProvider = StateProvider<String>((ref) {
 });
 
 final hidePasswordProvider = StateProvider(((ref) => true));
-
 final passwordInputReg = RegExp(r"^\d{0,6}$");
 final passwordReg = RegExp(r"^\d{6}$");
 
 class CreateWalletSetPassword extends CreateWalletBaseStep {
-  const CreateWalletSetPassword({Key? key}) : super(3, key: key);
+  final void Function() onVerifyPassword;
+  CreateWalletSetPassword(this.onVerifyPassword, {Key? key})
+      : super(3, key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +32,7 @@ class CreateWalletSetPassword extends CreateWalletBaseStep {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 30),
-                  const TextPageTitle("设置钱包密码"),
+                  const TextPageTitle("请设置钱包密码"),
                   const SizedBox(height: 10),
                   const Text("当您忘记交易密码时，可卸载重装后导入您的助记词，以此重新设置交易密码"),
                   const SizedBox(height: 30),
@@ -99,13 +99,13 @@ class CreateWalletSetPassword extends CreateWalletBaseStep {
                       Log.i("输入完成，输入的密码为 $password");
                       if (!Validator.shared.isWalletPassword(password)) {
                         Log.e("输入的密码验证不通过 $password");
-                        EasyLoading.showToast("只能输入纯数字");
+                        showToast("只能输入纯数字");
                         return;
                       }
                       ref
                           .read(passwordProvider.state)
                           .update((state) => password);
-                      nextStep(ref);
+                      onVerifyPassword();
                     },
                     // onTap: () {
                     //   print("Pressed");

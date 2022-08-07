@@ -7,7 +7,10 @@ import 'package:yc_wallet/widgets/text_page_title.dart';
 final _tipsAccepted = StateProvider<bool>((ref) => false);
 
 class CreateWalletTips extends CreateWalletBaseStep {
-  CreateWalletTips({Key? key}) : super(0, key: key) {
+  final void Function() onClickCreateWalletButton;
+
+  CreateWalletTips(this.onClickCreateWalletButton, {Key? key})
+      : super(0, key: key) {
     Log.i("tips 初始化");
   }
 
@@ -38,7 +41,7 @@ class CreateWalletTips extends CreateWalletBaseStep {
           const _Tips("请手写抄录助记词", Icons.home, "若复制或截屏保存，助记词有可能泄露"),
           const _Tips("将助记词放在安全的地方", Icons.home, "一旦丢失资产将无法找回"),
           Expanded(child: Container()),
-          _ActionArea(() => nextStep(ref)),
+          _ActionArea(onClickCreateWalletButton),
         ],
       ),
     );

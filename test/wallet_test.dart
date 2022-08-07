@@ -18,7 +18,7 @@ import 'package:web3dart/credentials.dart' as web3;
 import 'package:web3dart/crypto.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:convert/convert.dart';
-import 'package:bip32/bip32.dart' as bip32;
+// import 'package:bip32/bip32.dart' as bip32;
 
 void main() {
   test("generate a new wallet", () {
@@ -39,9 +39,8 @@ void main() {
     const hexKey =
         "1604d928c18a0fbfa2da40c9dec2595b62cc4c6b170dda8d0d0dcc50caa43c99";
     const password = "123456";
-    final wallet = WalletManager.from(hexKey: hexKey, password: password);
-    assert(wallet != null, "Import from hex key failed");
-    assert(wallet?.hexKey == hexKey, "  hexKey is not the same with hexKey");
+    final wallet = WalletManager.fromPrivateKey(hexKey, password: password);
+    assert(wallet.hexKey == hexKey, "  hexKey is not the same with hexKey");
   });
 
   test("Import a wallet from a json", () {
@@ -93,8 +92,8 @@ void main() {
     final mnemonic12 = Mnemonic(entropy, Language.english);
     final seed = mnemonic12.toSeed();
     final hexKey = hex.encode(seed);
-    final wallet = WalletManager.from(hexKey: hexKey, password: "123456");
-    dev.log(wallet!.privateKey.address.hex);
+    final wallet = WalletManager.fromPrivateKey(hexKey, password: "123456");
+    dev.log(wallet.privateKey.address.hex);
   });
 
   test("generate a mnemonic from a sentence.", () {
@@ -107,12 +106,13 @@ void main() {
             "4f93b1b42fce631c3d97371d3ebcb65042c40274d76cd247cd172c81a1e99cf71ee512851b0325fbec132a1d2ffb166fd5f784d4f3c128544bc8b61a25e31b6d",
         "hexKey from mnemonic sentence  is not right.");
     final seed = Uint8List.fromList(mnemonic.toSeed());
-    final node = bip32.BIP32.fromSeed(seed);
-    final rootHexKey2 = bytesToHex(node.privateKey);
-    final child = node.derivePath("m/44'/0'/0'/0/0");
-    final hexKey2 = bytesToHex(child.privateKey);
+    // TODO: 使用coinslib 替换BIP32
+    // final node = bip32.BIP32.fromSeed(seed);
+    // final rootHexKey2 = bytesToHex(node.privateKey);
+    // final child = node.derivePath("m/44'/0'/0'/0/0");
+    // final hexKey2 = bytesToHex(child.privateKey);
 
-    dev.log("hexKey2 $hexKey2");
+    // dev.log("hexKey2 $hexKey2");
   });
 
   test("hdwallet.", () {
@@ -126,26 +126,39 @@ void main() {
     //     "hexKey from mnemonic sentence  is not right.");
     final seed = Uint8List.fromList(mnemonic.toSeed());
 
-    final node = bip32.BIP32.fromSeed(seed);
+    // TODO: 使用coinslib 替换BIP32
+    // final node = bip32.BIP32.fromSeed(seed);
 
-    /// root private key
-    final rootHexKey2 = bytesToHex(node.privateKey);
+    // /// root private key
+    // final rootHexKey2 = bytesToHex(node.privateKey);
 
-    /// bitcoin child private key, 主网
-    final child = node.derivePath("m/44'/0'/0'/0/0");
-    final bitcoinPrivateKey = child.toWIF();
+    // /// bitcoin child private key, 主网
+    // final child = node.derivePath("m/44'/0'/0'/0/0");
+    // final bitcoinPrivateKey = child.toWIF();
 
-    // etherum child private key,
-    // final child = node.derivePath("m/44'/60'/0'/0/0");
-    final hexKey2 = bytesToHex(child.privateKey);
-    child.toBase58();
-    final btcPrivateKey = child.toWIF();
+    // // etherum child private key,
+    // // final child = node.derivePath("m/44'/60'/0'/0/0");
+    // final hexKey2 = bytesToHex(child.privateKey);
+    // child.toBase58();
+    // final btcPrivateKey = child.toWIF();
 
     // final exPair = ECPair.fromWIF(btcPrivateKey);
     // final address =
     //     P2WPKH(data: PaymentData(pubkey: node.publicKey)).data.address;
     // dev.log("address is $address");
     // dev.log("hexKey2 $hexKey2");
+  });
+
+  test("async", () async {
+    print("1111");
+    Future.delayed(Duration(milliseconds: 1000), () {
+      print("222");
+      return Future.value(100);
+    }).then((value) {
+      print("333");
+    });
+
+    print("4444 ");
   });
 
   // praise you muffin lion enable neck grocery crumble super myself license ghost

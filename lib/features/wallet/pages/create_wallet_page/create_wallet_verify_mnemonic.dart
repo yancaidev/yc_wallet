@@ -43,7 +43,11 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
 
   late final StateProvider<bool> _confirmButtonEnable;
 
-  CreateWalletVerifyMnemonic({Key? key}) : super(2, key: key) {
+  final void Function() onSkipBackup;
+  final void Function() onMnemonicVerified;
+  CreateWalletVerifyMnemonic(this.onSkipBackup, this.onMnemonicVerified,
+      {Key? key})
+      : super(2, key: key) {
     _confirmButtonEnable = StateProvider<bool>((ref) {
       final pickedWords = ref.watch(_pickedWordsProvider);
       return pickedWords.containsNoNull();
@@ -87,9 +91,7 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
           .read(_pickedWordsProvider.state)
           .update((state) => List.filled(3, null));
     } else {
-      // YCRouterDetegate.of(context)
-      //     .push(RouteConfig(RouteName.setWalletPassword));
-      nextStep(ref);
+      onMnemonicVerified();
     }
   }
 
@@ -164,7 +166,7 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
           )),
           outlinedButton(
             "稍候备份",
-            onPressed: () => _skipBackupMnemonic(context),
+            onPressed: onSkipBackup,
           ),
           const SizedBox(height: 10),
           elevatedButton(

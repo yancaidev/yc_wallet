@@ -42,7 +42,14 @@ final _data = <r.Reflectable, r.ReflectorData>{
             -1,
             const <int>[-1],
             null,
-            {}),
+            {
+              r'==': 1,
+              r'toString': 0,
+              r'noSuchMethod': 1,
+              r'hashCode': 0,
+              r'runtimeType': 0,
+              r'name': 0
+            }),
         r.NonGenericClassMirrorImpl(
             r'BaseModel',
             r'.BaseModel',
@@ -65,7 +72,16 @@ final _data = <r.Reflectable, r.ReflectorData>{
             -1,
             const <int>[-1],
             null,
-            {}),
+            {
+              r'==': 1,
+              r'toString': 0,
+              r'noSuchMethod': 1,
+              r'hashCode': 0,
+              r'runtimeType': 0,
+              r'toJson': 0,
+              r'name': 0,
+              r'copyWith': 0
+            }),
         r.NonGenericClassMirrorImpl(
             r'dart.core.Object with ._$BaseModel',
             r'.dart.core.Object with ._$BaseModel',
@@ -83,7 +99,16 @@ final _data = <r.Reflectable, r.ReflectorData>{
             -1,
             const <int>[-1],
             null,
-            {})
+            {
+              r'==': 1,
+              r'toString': 0,
+              r'noSuchMethod': 1,
+              r'hashCode': 0,
+              r'runtimeType': 0,
+              r'toJson': 0,
+              r'name': 0,
+              r'copyWith': 0
+            })
       ],
       null,
       null,
@@ -93,10 +118,20 @@ final _data = <r.Reflectable, r.ReflectorData>{
         const r.FakeType(r'.dart.core.Object with ._$BaseModel')
       ],
       3,
-      {},
+      {
+        r'==': (dynamic instance) => (x) => instance == x,
+        r'toString': (dynamic instance) => instance.toString,
+        r'noSuchMethod': (dynamic instance) => instance.noSuchMethod,
+        r'hashCode': (dynamic instance) => instance.hashCode,
+        r'runtimeType': (dynamic instance) => instance.runtimeType,
+        r'name': (dynamic instance) => instance.name,
+        r'toJson': (dynamic instance) => instance.toJson,
+        r'copyWith': (dynamic instance) => instance.copyWith
+      },
       {},
       null,
       [
+        const [0, 0, null],
         const [1, 0, null],
         const [
           0,

@@ -35,7 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   web3dart: ^2.3.5
   bip39_mnemonic: ^2.0.2
-  bip32: ^2.0.0
+  # bip32: ^2.0.0
   coinslib: ^3.1.4
   flutter_riverpod: ^1.0.3
   connectivity_plus: ^2.3.6
@@ -67,6 +67,9 @@ dependencies:
   freezed_annotation: ^2.1.0
   reflectable: ^3.0.8
   analyzer: ^3.4.1
+  flutter_keyboard_visibility: ^5.3.0
+  bot_toast: ^4.0.3
+  flutter_smart_dialog: ^4.0.9+8
 
 dependency_overrides:
   analyzer: ">=4.2.0 <5.0.0"

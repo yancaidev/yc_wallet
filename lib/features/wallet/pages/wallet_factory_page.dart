@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
+import 'package:yc_wallet/main.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/base_app_bar.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
+import 'package:yc_wallet/widgets/password_pad.dart';
 
 class WalletFactoryPage extends BasePage {
   WalletFactoryPage(RouteConfig config) : super(config, const _WalletActions());
@@ -16,17 +18,42 @@ class WalletFactoryPage extends BasePage {
 class _WalletActions extends ConsumerWidget {
   const _WalletActions({Key? key}) : super(key: key);
 
-  void _navigateToCreateWalletPage(BuildContext context) {
+  /// 点击创建新钱包按钮
+  void _onCreateWalletButtonPressed(BuildContext context) {
     YCRouterDetegate.of(context).push(RouteConfig(RouteName.createWallet));
   }
 
-  void _navigateToImportWalletPage(BuildContext context) {
-    YCRouterDetegate.of(context).push(RouteConfig(RouteName.importWallet));
+  /// 点击导入钱包按钮回调
+  Future<void> _onImportButtonPressed(WidgetRef ref,
+      VoidCallback onPasswordNotSet, VoidCallback onPasswordRight) async {
+    final passwordSetted = ref.read(appStateProvider).isWalletPasswordSetted;
+    if (!passwordSetted) {
+      ref.refresh(hidePasswordProvider);
+      onPasswordNotSet();
+    } else {
+      showSlideUpDialog(PasswordPad(
+        onClose: hideSlideUpDialog,
+        onDone: (password) async {
+          hideSlideUpDialog();
+          final isRight = await UserSettings.isPasswordRight(password);
+          if (isRight) {
+            onPasswordRight();
+            return;
+          }
+          showToast("密码错误");
+        },
+      ));
+    }
   }
 
-  void _navToSetPasswordPage(BuildContext context, WidgetRef ref) {
-    ref.refresh(hidePasswordProvider);
+  /// 跳转到设置密码页面
+  void _navigateToSetPasswordPage(BuildContext context) {
     YCRouterDetegate.of(context).push(RouteConfig(RouteName.setWalletPassword));
+  }
+
+  /// 跳转到导入钱包页面
+  void _navigatorToImportPasswordPage(BuildContext context) {
+    YCRouterDetegate.of(context).push(RouteConfig(RouteName.importWallet));
   }
 
   @override
@@ -44,25 +71,24 @@ class _WalletActions extends ConsumerWidget {
               children: [
                 elevatedButton(
                   "创建新钱包",
-                  onPressed: () => _navigateToCreateWalletPage(context),
+                  onPressed: () => _onCreateWalletButtonPressed(context),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 56,
                   child: TextButton(
                     style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.black12)),
-                    onPressed: () => _navToSetPasswordPage(context, ref),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0x11000000)),
+                    ),
+                    onPressed: () => _onImportButtonPressed(
+                      ref,
+                      () => _navigateToSetPasswordPage(context),
+                      () => _navigatorToImportPasswordPage(context),
+                    ),
                     child: const _DoubleTitlesButton(),
                   ),
                 ),
-                // OutlinedButton(
-                //     onPressed: () {
-                //       YCRouterDetegate.of(context)
-                //           .push(RouteConfig(RouteName.main));
-                //     },
-                //     child: const Text("跳过")),
               ],
             )),
       ),
@@ -70,6 +96,7 @@ class _WalletActions extends ConsumerWidget {
   }
 }
 
+/// 主副标题按钮
 class _DoubleTitlesButton extends StatelessWidget {
   const _DoubleTitlesButton({Key? key}) : super(key: key);
 
@@ -85,6 +112,7 @@ class _DoubleTitlesButton extends StatelessWidget {
   }
 }
 
+/// 主副标题按钮 - 主标题
 class _MainTitleOfButton extends Text {
   const _MainTitleOfButton(String data)
       : super(data,
@@ -94,6 +122,7 @@ class _MainTitleOfButton extends Text {
                 fontWeight: FontWeight.bold));
 }
 
+/// 主副标题按钮 - 副标题
 class _SubtitleOfButton extends Text {
   const _SubtitleOfButton(String data)
       : super(data,

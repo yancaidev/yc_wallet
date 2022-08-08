@@ -1,8 +1,8 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/navigation/yc_route_infomation_parser.dart';
+import 'package:yc_wallet/share/app_state.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 
@@ -10,10 +10,13 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-final appStateProvider = StateProvider((ref) => true);
+final appStateProvider = StateProvider<AppState>((ref) => AppState());
 
-final prepareAppStateProvider = FutureProvider<bool>((ref) async {
-  return UserSettings.shouldShowIntro();
+final prepareAppStateProvider = FutureProvider<AppState>((ref) async {
+  final showIntro = await UserSettings.shouldShowIntro();
+  final walletPasswordSetted = await UserSettings.isPasswordSetted();
+  return AppState(
+      showIntro: showIntro, isWalletPasswordSetted: walletPasswordSetted);
 });
 
 class MyApp extends ConsumerStatefulWidget {
@@ -37,13 +40,14 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     _routerDetegate ??= YCRouterDetegate(ref);
     final appState = ref.watch(prepareAppStateProvider);
-    ref.listen<AsyncValue<bool>>(prepareAppStateProvider, (previous, next) {
+    ref.listen<AsyncValue<AppState>>(prepareAppStateProvider, (previous, next) {
       Log.i("读取的新值为 ${next.value}");
-      ref.read(appStateProvider.state).state = next.value ?? true;
+
+      ref.read(appStateProvider.state).state = next.value!;
     });
-    ref.listen<bool>(appStateProvider, (previous, next) {
+    ref.listen<AppState?>(appStateProvider, (previous, next) {
       Log.i("应用初始化状态设置成功 $next");
-      ref.read(appStateProvider.state).state = next;
+      ref.read(appStateProvider.state).state = next!;
     });
     return appState.when(
       loading: () {

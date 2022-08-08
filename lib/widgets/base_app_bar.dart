@@ -146,7 +146,8 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       titleTextStyle: titleTextStyle,
       systemOverlayStyle: systemOverlayStyle ??
           SystemUiOverlayStyle(
-              statusBarColor: lightBackground ? Colors.white : backgroundColor,
+              statusBarColor:
+                  lightBackground ? Colors.transparent : backgroundColor,
               systemNavigationBarIconBrightness:
                   lightBackground ? Brightness.dark : Brightness.light,
               statusBarIconBrightness:

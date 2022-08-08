@@ -9,13 +9,18 @@ import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_verify_password.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/utils/scroll_behavior_none.dart';
+import 'package:yc_wallet/widgets/base_app_bar.dart';
 import 'package:yc_wallet/widgets/dots_stepper.dart';
 import 'create_wallet_generate_mnemonic.dart';
 import 'create_wallet_tips.dart';
 import 'create_wallet_verify_mnemonic.dart';
 
 final _currentStepProvider = StateProvider((ref) => 0);
+final getExistedPasswordProvider = FutureProvider<String?>((ref) async {
+  return await UserSettings.getPassword();
+});
 
 class CreateWalletPage extends BasePage {
   CreateWalletPage(RouteConfig config) : super(config, _CreateWalletRoot());
@@ -38,16 +43,11 @@ class _CreateWalletRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("创建钱包", style: TextStyle(color: Colors.black)),
-        centerTitle: true,
-        leading: const YCBackButton(color: Colors.black),
-        backgroundColor: Colors.white,
+      appBar: BaseAppBar(
+        textTitle: "创建钱包",
         elevation: 0,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
-          statusBarIconBrightness: Brightness.dark,
-        ),
+        lightBackground: true,
+        backgroundColor: Colors.transparent,
       ),
       body: _CreateWalletSteps(key: globalKey),
     );
@@ -88,23 +88,31 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
     //   _pageController.animateToPage(next,
     //       duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
     // }));
-
-    return Column(
-      children: [
-        _CreateWalletStepper(stepsCount, position),
-        Expanded(
-            child: PageView(
-          controller: _pageController,
-          scrollBehavior: ScrollBehaviorNone(),
-          physics: const NeverScrollableScrollPhysics(),
-          children: pages.toList(),
-          onPageChanged: (page) {
-            Log.i("页面变化了 $page");
-            // ref.read(_currentStepProvider.state).update((state) => page);
-          },
-        )),
-      ],
-    );
+    final getPassword = ref.watch(getExistedPasswordProvider);
+    return getPassword.when(data: (data) {
+      final isPasswordSet = data != null && data.isNotEmpty;
+      stepsCount = isPasswordSet ? 3 : 5;
+      return Column(
+        children: [
+          _CreateWalletStepper(stepsCount, position),
+          Expanded(
+              child: PageView(
+            controller: _pageController,
+            scrollBehavior: ScrollBehaviorNone(),
+            physics: const NeverScrollableScrollPhysics(),
+            children: pages.toList(),
+            onPageChanged: (page) {
+              Log.i("页面变化了 $page");
+              // ref.read(_currentStepProvider.state).update((state) => page);
+            },
+          )),
+        ],
+      );
+    }, error: (_, _1) {
+      return Container();
+    }, loading: () {
+      return Container();
+    });
   }
 
   void nextPage({int step = 1}) {

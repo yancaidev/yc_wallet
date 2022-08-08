@@ -4,7 +4,9 @@ import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
+import 'package:yc_wallet/widgets/password_pad.dart';
 import 'package:yc_wallet/widgets/size_box_height_only.dart';
 import 'package:yc_wallet/widgets/text_page_title.dart';
 
@@ -19,6 +21,31 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
       {Key? key})
       : super(1, key: key);
 
+  /// 点击了稍候备份按钮回调方法
+  /// [onPasswordRight] 密码验证通过回调， 为啥多次一举?, [context] 不建议在异步方法中执行
+  void _onSkipBackupPressed(WidgetRef ref, VoidCallback onPasswordRight) {
+    final password = ref.read(getExistedPasswordProvider).value;
+    if (password?.isEmpty ?? true) {
+      onSkipBackupMnemonic();
+      return;
+    }
+    showSlideUpDialog(PasswordPad(
+      onDone: (password) async {
+        hideSlideUpDialog();
+        final isRight = await UserSettings.isPasswordRight(password);
+        if (!isRight) {
+          showToast("密码错误");
+          return;
+        }
+        onPasswordRight();
+      },
+    ));
+  }
+
+  void _navigateToMainPage(BuildContext context) {
+    YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
@@ -30,18 +57,22 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBoxHeightOnly(30),
-                  const TextPageTitle("备份助记词"),
-                  const SizedBox(height: 10),
-                  const Text("请按顺序抄录以下助记词，下一步将验证"),
-                  const SizedBox(height: 30),
-                  const _BackupMnemonic(),
+                children: const [
+                  SizedBoxHeightOnly(30),
+                  TextPageTitle("备份助记词"),
+                  SizedBox(height: 10),
+                  Text("请按顺序抄录以下助记词，下一步将验证"),
+                  SizedBox(height: 30),
+                  _BackupMnemonic(),
                 ],
               ),
             ),
           ),
-          outlinedButton("稍后备份", onPressed: onSkipBackupMnemonic),
+          outlinedButton(
+            "稍后备份",
+            onPressed: () =>
+                _onSkipBackupPressed(ref, () => _navigateToMainPage(context)),
+          ),
           const SizedBox(height: 10),
           elevatedButton("我已备份", onPressed: onBackupMnemonic),
           const SizedBox(height: 30),

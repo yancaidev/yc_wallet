@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/utils/validator.dart';
 import 'package:yc_wallet/widgets/text_page_title.dart';
 
@@ -18,6 +21,11 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
   Widget build(BuildContext context, WidgetRef ref) {
     final hidePassowd = ref.watch(hidePasswordProvider);
     const grayColor = Color(0xffeeeeee);
+
+    Future<void> _passwordPassed(String password) async {
+      await UserSettings.setWalletPassword(password);
+      onPasswordSetted();
+    }
 
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
@@ -97,7 +105,7 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
                         Log.e("两次输入的密码不一致，请重新输入", context);
                         return;
                       }
-                      onPasswordSetted();
+                      _passwordPassed(password);
                       // YCRouterDetegate.of(context)
                       // .clearAndPush(RouteConfig.main());
                     },

@@ -58,3 +58,21 @@ void showLoading() {
 void dismissLoading() {
   SmartDialog.dismiss();
 }
+
+void showSlideUpDialog(
+  Widget child, {
+  double width = double.infinity,
+  double height = double.infinity,
+  String? tag,
+}) async {
+  SmartDialog.show(
+    tag: tag,
+    useSystem: true,
+    alignment: Alignment.bottomCenter,
+    builder: (_) => child,
+  );
+}
+
+void hideSlideUpDialog({String? tag}) {
+  SmartDialog.dismiss(tag: tag);
+}

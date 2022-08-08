@@ -6,8 +6,12 @@ import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_generate_mnemonic.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
+import 'package:yc_wallet/main.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
+import 'package:yc_wallet/widgets/password_pad.dart';
+import 'package:yc_wallet/widgets/show_verify_password_dialog.dart';
 import 'package:yc_wallet/widgets/text_page_title.dart';
 import 'package:yc_wallet/extensions/list_ext.dart';
 
@@ -54,6 +58,7 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
     });
   }
 
+  /// 选择 助记词 单词 回调
   void onPickWord(WidgetRef ref, String word) {
     Log.i("选择了 $word");
     final pickedWords = ref.watch(_pickedWordsProvider);
@@ -84,19 +89,60 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
   /// 点击了确认按钮，如果助记词验证成功，跳转到设置密码页面，否则重新选择助记词，
   /// 验证用户确实备份了助记词
   void _onClickConfirmButton(
-      BuildContext context, WidgetRef ref, bool isRight) {
+      WidgetRef ref, bool isRight, VoidCallback onPasswordRight) {
     Log.i("Confirm button is clicked. Mnemonic is $isRight");
     if (!isRight) {
+      showToast("助记词验证失败");
       ref
           .read(_pickedWordsProvider.state)
           .update((state) => List.filled(3, null));
-    } else {
-      onMnemonicVerified();
+      return;
     }
+    if (!ref.read(appStateProvider).isWalletPasswordSetted) {
+      onMnemonicVerified();
+      return;
+    }
+    showSlideUpDialog(PasswordPad(
+      onClose: hideSlideUpDialog,
+      onDone: (password) async {
+        hideSlideUpDialog();
+        final isRight = await UserSettings.isPasswordRight(password);
+        if (isRight) {
+          onPasswordRight();
+          return;
+        }
+        showToast("密码错误");
+      },
+    ));
   }
 
   /// 点击了“稍候备份”按钮，跳过助记词验证
-  void _skipBackupMnemonic(BuildContext context) {
+  void _onSkipBackupMnemonicButtonPressed(
+      WidgetRef ref, VoidCallback onRightPassowrd) async {
+    final isPasswordSet = ref.read(appStateProvider).isWalletPasswordSetted;
+    if (isPasswordSet) {
+      showSlideUpDialog(
+        PasswordPad(
+          onClose: hideSlideUpDialog,
+          onDone: (password) async {
+            hideSlideUpDialog();
+            final isPasswordRight =
+                await UserSettings.isPasswordRight(password);
+            if (isPasswordRight) {
+              onRightPassowrd();
+              return;
+            }
+            showToast("密码错误");
+          },
+        ),
+      );
+      return;
+    }
+    onSkipBackup();
+  }
+
+  /// 跳转到 MainPage
+  void _navigateToMainPage(BuildContext context) {
     YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
   }
 
@@ -166,13 +212,20 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
           )),
           outlinedButton(
             "稍候备份",
-            onPressed: onSkipBackup,
+            onPressed: () => _onSkipBackupMnemonicButtonPressed(
+              ref,
+              () => _navigateToMainPage(context),
+            ),
           ),
           const SizedBox(height: 10),
           elevatedButton(
             "确认",
             onPressed: isConfirmButtonEnable
-                ? () => _onClickConfirmButton(context, ref, isRight)
+                ? () => _onClickConfirmButton(
+                      ref,
+                      isRight,
+                      () => _navigateToMainPage(context),
+                    )
                 : null,
           ),
         ],

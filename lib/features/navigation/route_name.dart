@@ -6,7 +6,8 @@ enum RouteName {
   main,
   walletIntro,
   setWalletPassword,
-  confirmWalletPassword;
+  confirmWalletPassword,
+  verifyExistedPassword;
 
   static RouteName fromPath(String path) {
     switch (path) {

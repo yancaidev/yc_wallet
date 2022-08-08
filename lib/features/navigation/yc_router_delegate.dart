@@ -8,9 +8,11 @@ import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet
 import 'package:yc_wallet/features/wallet/pages/import_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/main_tab_page.dart';
 import 'package:yc_wallet/features/wallet/pages/set_wallet_password_page/index.dart';
+import 'package:yc_wallet/features/wallet/pages/verify_exsiting_password_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_factory_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_intro_page/wallet_intro_page.dart';
 import 'package:yc_wallet/main.dart';
+import 'package:yc_wallet/share/app_state.dart';
 import 'package:yc_wallet/utils/log_utils.dart';
 
 /// Router使用该对象
@@ -33,14 +35,14 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
         // App启动初始栈，如果已经才看了新特性，直接进入主页，否则进入新特性页面
         _routeHistory = List.of(
           [
-            _ref.read<bool>(appStateProvider)
+            _ref.read<AppState>(appStateProvider).showIntro
                 ? RouteConfig(RouteName.walletIntro)
                 : RouteConfig(RouteName.main)
           ],
         ),
         allPages = List.of(
           [
-            _ref.read<bool>(appStateProvider)
+            _ref.read<AppState>(appStateProvider).showIntro
                 ? WalletIntroPage(RouteConfig(RouteName.walletIntro))
                 : MainTabPage(RouteConfig.main())
           ],
@@ -116,6 +118,8 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
         return SetWalletPasswordPage();
       case RouteName.confirmWalletPassword:
         return ConfirmWalletPasswordPage();
+      case RouteName.verifyExistedPassword:
+        return VerifyExsitingPasswordPage();
       default:
         Log.e("不支持跳转到 $config");
         throw UnsupportedError("不支持跳转到$config");

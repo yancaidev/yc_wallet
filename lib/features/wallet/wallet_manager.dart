@@ -78,7 +78,6 @@ class WalletManager {
         wallet = web3.Wallet.fromJson(json.encode(encoded), password);
         errorMsg = "钱包json不正确";
       });
-      final json2 = wallet?.toJson();
     } catch (e) {
       Log.e("钱包导出异常", e);
       throw SimpleException(errorMsg, e);

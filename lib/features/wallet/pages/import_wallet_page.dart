@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
+import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
@@ -90,7 +91,8 @@ class _ImportWalletState extends ConsumerState<_ImportWallet> {
                               IconButton(
                                   alignment: Alignment.bottomRight,
                                   onPressed: () {
-                                    showToast("待完成", toastType: ToastType.warn);
+                                    showToast("二维码扫描导入功能待完成",
+                                        toastType: ToastType.warn);
                                   },
                                   icon: const Icon(Icons.qr_code_scanner)),
                             ],
@@ -99,7 +101,10 @@ class _ImportWalletState extends ConsumerState<_ImportWallet> {
                     const SizedBox(height: 30),
                     elevatedButton(
                       "确认导入",
-                      onPressed: !isEnable ? null : _parseWallet,
+                      onPressed: !isEnable
+                          ? null
+                          : () =>
+                              _parseWallet(() => _navigateToMainPage(context)),
                     ),
                     Expanded(child: Container()),
                     Card(
@@ -161,50 +166,67 @@ class _ImportWalletState extends ConsumerState<_ImportWallet> {
     _hideKeyboard();
   }
 
-  Future<Wallet?> _stringToWalletType() async {
-    return Future.delayed(const Duration(milliseconds: 300), () {
-      WalletType? walletType;
-      if (formattedInputValue.contains(" ")) {
-        final words = formattedInputValue.split(" ");
-        if (words.length == 12) {
-          Log.i("输入了 12 位 或者 14 位助记词");
-          walletType = WalletType.mnemonic12(words: words);
-        } else if (words.length == 24) {
-          walletType = WalletType.mnemonic24(words: words);
-        } else {
-          Log.e("输入了错误的助记词");
-          walletType = null;
-          showToast("请输入正确的助记词");
-        }
-      } else if (formattedInputValue.length == 64) {
-        Log.i("输入了私钥 $formattedInputValue");
-        walletType = WalletType.privateKey(privateKey: formattedInputValue);
-      } else {
-        showToast("请输入正确的助记词或私钥");
-        walletType = null;
-      }
-      final password = ref.read(passwordProvider);
-      if (walletType == null) return null;
-      try {
-        final wallet = WalletManager.fromWalletType(
-            walletType: walletType, password: password);
-        Log.i("钱包导入成功 ${wallet.toJson()}");
-        return wallet;
-      } catch (e) {
-        final exp = e as SimpleException;
-        showToast(exp.message);
-        return null;
-      }
-    });
-  }
+  // Future<Wallet?> _stringToWalletType() {
+  //   return compute((message) {
+  //     WalletType? walletType;
+  //     if (formattedInputValue.contains(" ")) {
+  //       final words = formattedInputValue.split(" ");
+  //       if (words.length == 12) {
+  //         Log.i("输入了 12 位 或者 14 位助记词");
+  //         walletType = WalletType.mnemonic12(words: words);
+  //       } else if (words.length == 24) {
+  //         walletType = WalletType.mnemonic24(words: words);
+  //       } else {
+  //         Log.e("输入了错误的助记词");
+  //         walletType = null;
+  //         showToast("请输入正确的助记词");
+  //       }
+  //     } else if (formattedInputValue.length == 64) {
+  //       Log.i("输入了私钥 $formattedInputValue");
+  //       walletType = WalletType.privateKey(privateKey: formattedInputValue);
+  //     } else {
+  //       showToast("请输入正确的助记词或私钥");
+  //       walletType = null;
+  //     }
+
+  //     final password = ref.read(passwordProvider);
+  //     if (walletType == null) return null;
+  //     try {
+  //       final wallet = WalletManager.fromWalletType(
+  //           walletType: walletType, password: password);
+  //       Log.i("钱包导入成功 ${wallet.toJson()}");
+  //       Log.i("parsing success....");
+  //       return wallet;
+  //     } catch (e) {
+  //       Log.i("parsing error....");
+  //       final exp = e as SimpleException;
+  //       showToast(exp.message);
+  //       return null;
+  //     }
+  //   }, null);
+  // }
 
   /// 助记词或者私钥转换为钱包
-  void _parseWallet() async {
+  Future<void> _parseWallet(VoidCallback onWalletImported) async {
     _hideKeyboard();
     showLoading();
-    final wallet = await _stringToWalletType();
+    final password = ref.read(passwordProvider);
+    final message = _Message(
+      keyOrMnemonic: formattedInputValue,
+      password: password,
+    );
+
+    /// 耗时任务需要放在子线程中去做； async 和 computed 的区别是？
+    final wallet = await compute(_stringToWalletType, message);
     dismissLoading();
-    Log.i("333");
+    if (wallet != null) {
+      onWalletImported();
+    }
+  }
+
+  /// 钱包导入成功，跳转到主页
+  void _navigateToMainPage(BuildContext context) {
+    YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
   }
 }
 
@@ -212,3 +234,51 @@ class TipsText extends Text {
   const TipsText(String data, {Key? key})
       : super(data, key: key, style: const TextStyle(color: Color(0xAA000000)));
 }
+
+class _Message {
+  String keyOrMnemonic;
+  String password;
+  _Message({required this.keyOrMnemonic, required this.password});
+}
+
+/// computed 的方法不能是类的实例方法，要放在类的外面，真是神了个奇。 参考地址：
+/// https://stackoverflow.com/questions/51998995/invalid-arguments-illegal-argument-in-isolate-message-object-is-a-closure
+Wallet? _stringToWalletType(_Message message) {
+  String formattedInputValue = message.keyOrMnemonic;
+  String password = message.password;
+  WalletType? walletType;
+  if (message.keyOrMnemonic.contains(" ")) {
+    final words = formattedInputValue.split(" ");
+    if (words.length == 12) {
+      Log.i("输入了 12 位 或者 14 位助记词");
+      walletType = WalletType.mnemonic12(words: words);
+    } else if (words.length == 24) {
+      walletType = WalletType.mnemonic24(words: words);
+    } else {
+      Log.e("输入了错误的助记词");
+      walletType = null;
+      showToast("请输入正确的助记词");
+    }
+  } else if (formattedInputValue.length == 64) {
+    Log.i("输入了私钥 $formattedInputValue");
+    walletType = WalletType.privateKey(privateKey: formattedInputValue);
+  } else {
+    showToast("请输入正确的助记词或私钥");
+    walletType = null;
+  }
+  if (walletType == null) return null;
+  try {
+    final wallet = WalletManager.fromWalletType(
+        walletType: walletType, password: password);
+    Log.i("钱包导入成功 ${wallet.toJson()}");
+    Log.i("parsing success....");
+    return wallet;
+  } catch (e) {
+    Log.i("parsing error....");
+    final exp = e as SimpleException;
+    showToast(exp.message);
+    return null;
+  }
+}
+
+// 0xea78181695ed15200619356bb70f616ccc116b17a408384867c52428ca0321b4

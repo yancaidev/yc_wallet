@@ -52,7 +52,10 @@ class NumberPad extends StatelessWidget {
         if (cellIndex == cellCount - 1) {
           cells.add(_KeyboardCell(
             onPress: _onDelete,
-            child: const Icon(Icons.arrow_right),
+            child: const Icon(
+              Icons.arrow_back,
+              color: Color(0x99000000),
+            ),
           ));
         } else {
           final number = newKeys[cellIndex];

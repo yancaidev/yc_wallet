@@ -37,6 +37,23 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Log.i("start------------");
+    print("first").then((value) {
+      Log.i("middle ========= $value");
+    });
+    print("second").then((value) {
+      Log.i("middle ========= $value");
+    });
+    Log.i("end----------");
+  }
+
+  Future<String> print(String tag) async {
+    return Future.delayed(const Duration(seconds: 1), (() => "$tag ==="));
+  }
+
+  @override
   Widget build(BuildContext context) {
     _routerDetegate ??= YCRouterDetegate(ref);
     final appState = ref.watch(prepareAppStateProvider);

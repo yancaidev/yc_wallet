@@ -51,8 +51,8 @@ void showToast(String? status, {ToastType toastType = ToastType.error}) {
   );
 }
 
-void showLoading() {
-  SmartDialog.showLoading();
+Future showLoading() async {
+  return SmartDialog.showLoading();
 }
 
 void dismissLoading() {

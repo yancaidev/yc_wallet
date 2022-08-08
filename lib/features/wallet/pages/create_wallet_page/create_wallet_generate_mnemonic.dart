@@ -30,6 +30,7 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
       return;
     }
     showSlideUpDialog(PasswordPad(
+      onClose: hideSlideUpDialog,
       onDone: (password) async {
         hideSlideUpDialog();
         final isRight = await UserSettings.isPasswordRight(password);

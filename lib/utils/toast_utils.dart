@@ -66,6 +66,7 @@ void showSlideUpDialog(
   String? tag,
 }) async {
   SmartDialog.show(
+    backDismiss: false,
     tag: tag,
     useSystem: true,
     alignment: Alignment.bottomCenter,

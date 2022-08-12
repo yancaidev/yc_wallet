@@ -12,4 +12,6 @@ extension ListExt<E> on List<E> {
     }
     return true;
   }
+
+  E? firstOrNull() => length > 0 ? first : null;
 }

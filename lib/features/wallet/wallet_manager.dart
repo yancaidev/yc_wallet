@@ -6,21 +6,51 @@ import 'package:coinslib/coinslib.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/web3dart.dart' as web3;
+import 'package:yc_wallet/features/wallet/wallet_extensions.dart';
 import 'package:yc_wallet/model/simple_exception.dart';
 import 'package:yc_wallet/model/wallet_type.dart';
-import 'package:yc_wallet/share/freezed_import.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 
 class WalletManager {
-  // static Wallet newMnemonicWallet(String password) {
+  static final WalletManager shared = WalletManager._internal();
 
-  //   final mnemonic =  bip39.generateMnemonic(strength: 256);
-  //   return
-  // }
+  late web3.Wallet? _currentWallet;
 
   WalletManager._internal();
 
-  static final WalletManager shared = WalletManager._internal();
+  /// 获取当前的钱包
+  Future<web3.Wallet?> getCurrentWallet(String password) async {
+    if (_currentWallet != null) {
+      return _currentWallet;
+    }
+    final defaultWalletJson = await UserSettings.shared.getDefaultWallet();
+    if (defaultWalletJson == null) {
+      return null;
+    }
+    _currentWallet = web3.Wallet.fromJson(defaultWalletJson, password);
+    return _currentWallet;
+  }
+
+  /// 设置当前选中的钱包
+  void setCurrentWallet(web3.Wallet wallet) {
+    _currentWallet = wallet;
+  }
+
+  /// 添加钱包
+  Future addWallet(web3.Wallet wallet) async {
+    await UserSettings.shared.saveWallet(wallet.hexAddress, wallet.toJson());
+  }
+
+  /// 移除钱包
+  Future removeWallet(String hexAddress) async {
+    await UserSettings.shared.removeWallet(hexAddress);
+  }
+
+  /// 所有的钱包列表
+  Future<List<String>> get allWalletsAddresses async {
+    return await UserSettings.shared.allWalletsAddresses();
+  }
 
   static String generateMnemonic(int wordsCount) {
     if (wordsCount == 24) {

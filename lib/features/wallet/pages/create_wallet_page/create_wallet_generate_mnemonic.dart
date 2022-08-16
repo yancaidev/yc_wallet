@@ -3,6 +3,9 @@ import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
+import 'package:yc_wallet/model/wallet_type.dart';
+import 'package:yc_wallet/services/wallet_service.dart';
+import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
@@ -38,6 +41,13 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
           showToast("密码错误");
           return;
         }
+        final mnemonicWords = ref.read(mnemonicsProvider);
+        await saveWalletFromWalletType(
+          ref,
+          WalletType.fromMnemonicWords(mnemonicWords),
+          password,
+          false,
+        );
         onPasswordRight();
       },
     ));
@@ -69,11 +79,11 @@ class CreateWalletGenerateMnemonic extends CreateWalletBaseStep {
               ),
             ),
           ),
-          outlinedButton(
-            "稍后备份",
-            onPressed: () =>
-                _onSkipBackupPressed(ref, () => _navigateToMainPage(context)),
-          ),
+          // outlinedButton(
+          //   "稍后备份",
+          //   onPressed: () =>
+          //       _onSkipBackupPressed(ref, () => _navigateToMainPage(context)),
+          // ),
           const SizedBox(height: 10),
           elevatedButton("我已备份", onPressed: onBackupMnemonic),
           const SizedBox(height: 30),

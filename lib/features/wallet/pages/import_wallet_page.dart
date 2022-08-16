@@ -11,9 +11,12 @@ import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
 import 'package:yc_wallet/model/simple_exception.dart';
 import 'package:yc_wallet/model/wallet_type.dart';
+import 'package:yc_wallet/services/wallet_service.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/base_app_bar.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
+import 'package:yc_wallet/widgets/password_pad.dart';
 import 'package:yc_wallet/widgets/text_page_title.dart';
 
 class ImportWalletPage extends BasePage {
@@ -30,6 +33,7 @@ class _ImportWallet extends ConsumerStatefulWidget {
 class _ImportWalletState extends ConsumerState<_ImportWallet> {
   late String formattedInputValue = "";
   late StreamSubscription<bool> keyboardSubscription;
+  String _password = "";
   final _confirmButtonEnableProvider = StateProvider<bool>((ref) => false);
 
   @override
@@ -103,8 +107,7 @@ class _ImportWalletState extends ConsumerState<_ImportWallet> {
                       "确认导入",
                       onPressed: !isEnable
                           ? null
-                          : () =>
-                              _parseWallet(() => _navigateToMainPage(context)),
+                          : () => _onImportButtonPressed(context),
                     ),
                     Expanded(child: Container()),
                     Card(
@@ -206,21 +209,57 @@ class _ImportWalletState extends ConsumerState<_ImportWallet> {
   //   }, null);
   // }
 
+  void _onImportButtonPressed(BuildContext context) {
+    _hideKeyboard();
+    _showPasswordDialog(
+      () => _parseWallet(
+        () => _navigateToMainPage(context),
+      ),
+    );
+  }
+
+  void _showPasswordDialog(VoidCallback onPasswordRight) {
+    if (_password.isNotEmpty) {
+      onPasswordRight();
+      return;
+    }
+    showSlideUpDialog(PasswordPad(
+      onClose: hideSlideUpDialog,
+      onDone: (password) async {
+        hideSlideUpDialog();
+        final isRight = await UserSettings.isPasswordRight(password);
+        if (isRight) {
+          _password = password;
+          onPasswordRight();
+          return;
+        }
+        showToast("密码错误");
+      },
+    ));
+  }
+
   /// 助记词或者私钥转换为钱包
   Future<void> _parseWallet(VoidCallback onWalletImported) async {
     _hideKeyboard();
     showLoading();
-    final password = ref.read(passwordProvider);
+    Log.i("钱包密码为 $_password");
     final message = _Message(
       keyOrMnemonic: formattedInputValue,
-      password: password,
+      password: _password,
     );
 
     /// 耗时任务需要放在子线程中去做； async 和 computed 的区别是？
-    final wallet = await compute(_stringToWalletType, message);
-    dismissLoading();
-    if (wallet != null) {
-      onWalletImported();
+    try {
+      final wallet = await compute(_stringToWalletType, message);
+      if (wallet != null) {
+        await saveWallet(ref, wallet, _password, true);
+        onWalletImported();
+      }
+      dismissLoading();
+    } catch (e) {
+      final exp = e as SimpleException?;
+      dismissLoading();
+      showToast(exp?.message ?? "钱包导入失败");
     }
   }
 
@@ -257,16 +296,14 @@ Wallet? _stringToWalletType(_Message message) {
     } else {
       Log.e("输入了错误的助记词");
       walletType = null;
-      showToast("请输入正确的助记词");
+      throw SimpleException("请输入正确的助记词");
     }
   } else if (formattedInputValue.length == 64) {
     Log.i("输入了私钥 $formattedInputValue");
     walletType = WalletType.privateKey(privateKey: formattedInputValue);
   } else {
-    showToast("请输入正确的助记词或私钥");
-    walletType = null;
+    throw SimpleException("请输入正确的助记词或私钥");
   }
-  if (walletType == null) return null;
   try {
     final wallet = WalletManager.fromWalletType(
         walletType: walletType, password: password);
@@ -274,10 +311,7 @@ Wallet? _stringToWalletType(_Message message) {
     Log.i("parsing success....");
     return wallet;
   } catch (e) {
-    Log.i("parsing error....");
-    final exp = e as SimpleException;
-    showToast(exp.message);
-    return null;
+    rethrow;
   }
 }
 

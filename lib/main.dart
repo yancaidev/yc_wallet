@@ -3,21 +3,17 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/navigation/yc_route_infomation_parser.dart';
 import 'package:yc_wallet/share/app_state.dart';
+import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    ProviderScope(
+      child: MyApp(key: AppConfig.appKey),
+    ),
+  );
 }
-
-final appStateProvider = StateProvider<AppState>((ref) => AppState());
-
-final prepareAppStateProvider = FutureProvider<AppState>((ref) async {
-  final showIntro = await UserSettings.shouldShowIntro();
-  final walletPasswordSetted = await UserSettings.isPasswordSetted();
-  return AppState(
-      showIntro: showIntro, isWalletPasswordSetted: walletPasswordSetted);
-});
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -27,14 +23,7 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
-  final YCRouteInfomationParser routeInformationParser =
-      YCRouteInfomationParser();
   YCRouterDetegate? _routerDetegate;
-
-  Future<bool> prepareAppInitState() async {
-    final showIntro = await UserSettings.shouldShowIntro();
-    return showIntro;
-  }
 
   @override
   void initState() {
@@ -55,7 +44,6 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    _routerDetegate ??= YCRouterDetegate(ref);
     final appState = ref.watch(prepareAppStateProvider);
     ref.listen<AsyncValue<AppState>>(prepareAppStateProvider, (previous, next) {
       Log.i("读取的新值为 ${next.value}");
@@ -91,17 +79,30 @@ class _MyAppState extends ConsumerState<MyApp> {
       data: (data) {
         Log.i("应用状态初始化成功，加载路由！");
         return MaterialApp.router(
-          theme: ThemeData.from(colorScheme: const ColorScheme.light())
-              .copyWith(
-                  buttonTheme: const ButtonThemeData(height: 56),
-                  appBarTheme: const AppBarTheme(
-                      titleTextStyle: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold))),
-          routeInformationParser: routeInformationParser,
-          routerDelegate: _routerDetegate!,
+          theme: ThemeData.from(
+            colorScheme: const ColorScheme.light(),
+          ).copyWith(
+            buttonTheme: const ButtonThemeData(height: 56),
+            appBarTheme: const AppBarTheme(
+              titleTextStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          routeInformationParser: YCRouteInfomationParser(),
+          routerDelegate: _routerDetegate ??= YCRouterDetegate(ref),
           builder: FlutterSmartDialog.init(),
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    /// 关闭数据库
+    ref.read(databaseProvider).close();
   }
 }

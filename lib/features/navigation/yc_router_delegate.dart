@@ -6,13 +6,13 @@ import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/confirm_wallet_password_page/index.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/features/wallet/pages/import_wallet_page.dart';
-import 'package:yc_wallet/features/wallet/pages/main_tab_page.dart';
+import 'package:yc_wallet/features/wallet/pages/main_tab_page/main_tab_page.dart';
 import 'package:yc_wallet/features/wallet/pages/set_wallet_password_page/index.dart';
 import 'package:yc_wallet/features/wallet/pages/verify_exsiting_password_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_factory_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_intro_page/wallet_intro_page.dart';
-import 'package:yc_wallet/main.dart';
 import 'package:yc_wallet/share/app_state.dart';
+import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/utils/log_utils.dart';
 
 /// Router使用该对象

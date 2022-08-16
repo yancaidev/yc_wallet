@@ -12,4 +12,10 @@ class WalletType with _$WalletType {
       Mnemonic24;
   const factory WalletType.json({required Map<String, Object> json}) =
       WalletJson;
+
+  static WalletType fromMnemonicWords(List<String> words) {
+    return words.length == 12
+        ? WalletType.mnemonic12(words: words)
+        : WalletType.mnemonic24(words: words);
+  }
 }

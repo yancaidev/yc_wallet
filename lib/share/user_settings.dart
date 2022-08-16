@@ -62,7 +62,13 @@ class UserSettings {
       if (walletsJson == null) {
         return null;
       }
-      _allWallets = jsonDecode(walletsJson);
+      final receiver = HashMap<String, String>();
+      _allWallets = jsonDecode(walletsJson, reviver: (key, value) {
+        if (key != null) {
+          receiver[key as String] = value as String;
+        }
+        return receiver;
+      });
     }
     return _allWallets;
   }

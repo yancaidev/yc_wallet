@@ -7,6 +7,9 @@ import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_generate_mnemonic.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
 import 'package:yc_wallet/main.dart';
+import 'package:yc_wallet/model/wallet_type.dart';
+import 'package:yc_wallet/services/wallet_service.dart';
+import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/buttons.dart';
@@ -108,6 +111,13 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
         hideSlideUpDialog();
         final isRight = await UserSettings.isPasswordRight(password);
         if (isRight) {
+          final mnemonicWords = ref.read(mnemonicsProvider);
+          await saveWalletFromWalletType(
+            ref,
+            WalletType.fromMnemonicWords(mnemonicWords),
+            password,
+            true,
+          );
           onPasswordRight();
           return;
         }
@@ -210,13 +220,13 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
                     ))
                 .toList(),
           )),
-          outlinedButton(
-            "稍候备份",
-            onPressed: () => _onSkipBackupMnemonicButtonPressed(
-              ref,
-              () => _navigateToMainPage(context),
-            ),
-          ),
+          // outlinedButton(
+          //   "稍候备份",
+          //   onPressed: () => _onSkipBackupMnemonicButtonPressed(
+          //     ref,
+          //     () => _navigateToMainPage(context),
+          //   ),
+          // ),
           const SizedBox(height: 10),
           elevatedButton(
             "确认",
@@ -228,6 +238,7 @@ class CreateWalletVerifyMnemonic extends CreateWalletBaseStep {
                     )
                 : null,
           ),
+          const SizedBox(height: 30),
         ],
       ),
     );

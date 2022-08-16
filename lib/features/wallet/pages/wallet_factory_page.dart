@@ -4,7 +4,7 @@ import 'package:yc_wallet/features/navigation/route_name.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
-import 'package:yc_wallet/main.dart';
+import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/widgets/base_app_bar.dart';
@@ -31,18 +31,19 @@ class _WalletActions extends ConsumerWidget {
       ref.refresh(hidePasswordProvider);
       onPasswordNotSet();
     } else {
-      showSlideUpDialog(PasswordPad(
-        onClose: hideSlideUpDialog,
-        onDone: (password) async {
-          hideSlideUpDialog();
-          final isRight = await UserSettings.isPasswordRight(password);
-          if (isRight) {
-            onPasswordRight();
-            return;
-          }
-          showToast("密码错误");
-        },
-      ));
+      // showSlideUpDialog(PasswordPad(
+      //   onClose: hideSlideUpDialog,
+      //   onDone: (password) async {
+      //     hideSlideUpDialog();
+      //     final isRight = await UserSettings.isPasswordRight(password);
+      //     if (isRight) {
+      //       onPasswordRight();
+      //       return;
+      //     }
+      //     showToast("密码错误");
+      //   },
+      // ));
+      onPasswordRight();
     }
   }
 

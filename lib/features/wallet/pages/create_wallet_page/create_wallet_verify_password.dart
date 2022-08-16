@@ -1,10 +1,9 @@
-import 'dart:ffi';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:yc_wallet/features/navigation/route_config.dart';
-import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
+import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_generate_mnemonic.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_page.dart';
+import 'package:yc_wallet/model/wallet_type.dart';
+import 'package:yc_wallet/services/wallet_service.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/utils/validator.dart';
@@ -23,8 +22,18 @@ class CreateWalletVerifyPassword extends CreateWalletBaseStep {
     const grayColor = Color(0xffeeeeee);
 
     Future<void> _passwordPassed(String password) async {
+      final mnemonicWords = ref.read(mnemonicsProvider);
+      await saveWalletFromWalletType(
+        ref,
+        WalletType.fromMnemonicWords(mnemonicWords),
+        password,
+        true,
+      );
       await UserSettings.setWalletPassword(password);
       onPasswordSetted();
+
+      /// 密码设置成功后，安全考虑，重置为空
+      ref.read(passwordProvider.state).update((state) => "");
     }
 
     return Padding(

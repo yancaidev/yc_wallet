@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -18,6 +19,7 @@ import 'package:web3dart/credentials.dart' as web3;
 import 'package:web3dart/crypto.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:convert/convert.dart';
+import 'package:yc_wallet/share/quick_import.dart';
 // import 'package:bip32/bip32.dart' as bip32;
 
 void main() {
@@ -159,6 +161,24 @@ void main() {
     });
 
     print("4444 ");
+  });
+
+  test("json decode", () {
+    final v = HashMap();
+    v["name"] = "张三";
+    v["age"] = 1;
+    final vJson = jsonEncode(v);
+    final m = HashMap();
+    m["person"] = vJson;
+    final mJson = jsonEncode(m);
+    final decodeM = HashMap<String, String>();
+    final value = jsonDecode(mJson, reviver: (key, value) {
+      if (key != null) {
+        decodeM[key as String] = value as String;
+      }
+      return decodeM;
+    });
+    Log.i(value);
   });
 
   // praise you muffin lion enable neck grocery crumble super myself license ghost

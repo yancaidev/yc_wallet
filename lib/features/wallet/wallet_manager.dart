@@ -52,6 +52,8 @@ class WalletManager {
     return await UserSettings.shared.allWalletsAddresses();
   }
 
+  /// 生成助记词
+  /// - [wordsCount] 助记词单词个数，支持12 / 24 位
   static String generateMnemonic(int wordsCount) {
     if (wordsCount == 24) {
       return Mnemonic.generate(Language.english).sentence;
@@ -110,7 +112,7 @@ class WalletManager {
       });
     } catch (e) {
       Log.e("钱包导出异常", e);
-      throw SimpleException(errorMsg, e);
+      throw SimpleException(errorMsg, origin: e);
     }
     return wallet!;
   }

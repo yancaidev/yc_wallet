@@ -76,7 +76,7 @@ class _PasswordPadState extends ConsumerState<PasswordPad> {
         _PasswordPadContainer(
           child: Column(
             children: [
-              _ToolBar(onClose: widget.onClose),
+              ToolBar(titleText: "请输入密码", onClose: widget.onClose),
               DotsIndicator(widget.passwordLength, filledDots),
               const SizedBox(height: 20),
               NumberPad(
@@ -112,36 +112,51 @@ class _PasswordPadContainer extends StatelessWidget {
   }
 }
 
-class _ToolBar extends StatelessWidget {
+class ToolBar extends StatelessWidget {
   final void Function()? onClose;
+  final Widget? title;
+  final String? titleText;
   final Widget? leftButton;
   final Widget? rightButton;
 
-  const _ToolBar({Key? key, this.onClose, this.leftButton, this.rightButton})
+  const ToolBar(
+      {Key? key,
+      this.onClose,
+      this.leftButton,
+      this.rightButton,
+      this.title,
+      this.titleText})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          width: 80,
-          height: 74,
-          child: IconButton(
-            onPressed: onClose,
-            icon: leftButton ?? const Icon(Icons.close_sharp),
+    return Container(
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 80,
+            height: 74,
+            child: IconButton(
+              onPressed: onClose,
+              icon: leftButton ?? const Icon(Icons.close_sharp),
+            ),
           ),
-        ),
-        const Text(
-          "请输入钱包密码",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(
-          width: 80,
-          child: rightButton,
-        ),
-      ],
+          title ??
+              Text(
+                titleText ?? "",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+          SizedBox(
+            width: 80,
+            child: rightButton,
+          ),
+        ],
+      ),
     );
   }
 }

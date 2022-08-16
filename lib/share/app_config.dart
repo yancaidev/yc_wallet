@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,6 +13,8 @@ class AppConfig {
     }
   }
   static AppConfig get shared => _instance;
+
+  static final GlobalKey appKey = GlobalKey();
 
   bool get isReleaseMode => kReleaseMode;
 }

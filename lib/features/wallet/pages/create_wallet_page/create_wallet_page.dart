@@ -1,13 +1,11 @@
-import 'dart:collection';
-
 import 'package:dots_indicator/dots_indicator.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_set_password.dart';
 import 'package:yc_wallet/features/wallet/pages/create_wallet_page/create_wallet_verify_password.dart';
+import 'package:yc_wallet/features/wallet/pages/main_tab_page/main_tab_page.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/share/user_settings.dart';
 import 'package:yc_wallet/utils/scroll_behavior_none.dart';
@@ -43,7 +41,7 @@ class _CreateWalletRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BaseAppBar(
+      appBar: const BaseAppBar(
         textTitle: "创建钱包",
         elevation: 0,
         lightBackground: true,
@@ -68,10 +66,13 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
 
   late final List<Widget> pages = List.of([]);
   int stepsCount = 5;
+  bool _isMnemonicBackuped = false;
 
   @override
   void initState() {
     super.initState();
+    ref.refresh(_currentStepProvider);
+    ref.refresh(mnemonicsProvider);
     pages.add(CreateWalletTips(generateMnemonic));
   }
 
@@ -143,6 +144,7 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
 
   /// 在创建助记词页面，跳过助记词备份步骤，跳转到设置密码步骤
   void onSkipBackupMnemonicAtGenerateStep() {
+    _isMnemonicBackuped = false;
     stepsCount = 4;
     pages.add(CreateWalletSetPassword(onSetPassword));
     nextPage();
@@ -165,6 +167,7 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
 
   /// 助记词创建成功，跳转到密码设置步骤；
   void onMnemonicBackedup() {
+    _isMnemonicBackuped = true;
     Log.i("助记词验证成功，设置密码");
     pages.add(CreateWalletSetPassword(onSetPassword));
     nextPage();
@@ -178,6 +181,7 @@ class _CreateWalletStepsState extends ConsumerState<_CreateWalletSteps> {
 
   /// 用户密码验证成功，跳转到主页；
   void onPasswordVerified() {
+    if (!_isMnemonicBackuped) {}
     Log.i("密码设置成功");
     YCRouterDetegate.of(context).clearAndPush(RouteConfig.main());
   }

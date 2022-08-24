@@ -3,6 +3,7 @@ import 'package:yc_wallet/features/navigation/route_config.dart';
 import 'package:yc_wallet/features/wallet/pages/base_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_intro_page/widgets/feature_pager.dart';
 import 'package:yc_wallet/share/quick_import.dart';
+import 'package:yc_wallet/widgets/base_app_bar.dart';
 
 class WalletIntroPage extends BasePage {
   WalletIntroPage(RouteConfig config) : super(config, const _WalletIntro());
@@ -22,6 +23,12 @@ class _WalletIntro extends StatelessWidget {
           systemNavigationBarIconBrightness: Brightness.dark),
       child: Scaffold(
           backgroundColor: Colors.white,
+          appBar: const BaseAppBar(
+            lightBackground: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            systemOverlayStyle: SystemUiOverlayStyle.dark,
+          ),
           body: Container(
             height: double.infinity,
             width: double.infinity,

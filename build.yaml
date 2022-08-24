@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          generate_connect_constructor: true
+      freezed:
+        options:
+          generic_argument_factories: true

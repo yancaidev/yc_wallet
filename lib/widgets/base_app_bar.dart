@@ -1,58 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 
-// class BaseAppBar extends AppBar {
-//   final bool lightBackground;
-//   BaseAppBar(
-//     this.lightBackground, {
-//     Key? key,
-//     required ThemeData theme,
-//     String textTitle = "",
-//     super.leading = const YCBackButton(),
-//     super.automaticallyImplyLeading = true,
-//     Widget? title,
-//     super.actions,
-//     super.flexibleSpace,
-//     super.bottom,
-//     super.elevation,
-//     super.shadowColor,
-//     super.shape,
-//     Color? backgroundColor,
-//     super.foregroundColor,
-//     super.iconTheme,
-//     super.actionsIconTheme,
-//     super.primary = true,
-//     super.centerTitle = true,
-//     super.excludeHeaderSemantics = false,
-//     super.titleSpacing,
-//     super.toolbarOpacity = 1.0,
-//     super.bottomOpacity = 1.0,
-//     super.toolbarHeight,
-//     super.leadingWidth,
-//     super.toolbarTextStyle,
-//     super.titleTextStyle,
-//     SystemUiOverlayStyle? systemOverlayStyle,
-//   })  : assert(elevation == null || elevation >= 0.0),
-//         super(
-//             key: key,
-//             title: title ??
-//                 Text(
-//                   textTitle,
-//                   style: const TextStyle(),
-//                 ),
-//             backgroundColor:
-//                 lightBackground ? Colors.white : theme.primaryColor,
-//             systemOverlayStyle: systemOverlayStyle ??
-//                 SystemUiOverlayStyle(
-//                     statusBarColor:
-//                         lightBackground ? Colors.white : theme.primaryColor,
-//                     systemNavigationBarIconBrightness:
-//                         lightBackground ? Brightness.dark : Brightness.light,
-//                     statusBarIconBrightness:
-//                         lightBackground ? Brightness.dark : Brightness.light));
-// }
-
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final bool showLeadingAsBackButton;
   final bool lightBackground;
   final String textTitle;
   final Widget? leading;
@@ -82,6 +32,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const BaseAppBar({
     Key? key,
+    this.showLeadingAsBackButton = false,
     this.lightBackground = false,
     this.textTitle = "",
     this.leading,
@@ -115,7 +66,11 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       key: key,
       leading: leading ??
-          YCBackButton(color: lightBackground ? Colors.black : Colors.white),
+          (showLeadingAsBackButton
+              ? YCBackButton(
+                  color: lightBackground ? Colors.black : Colors.white,
+                )
+              : null),
       automaticallyImplyLeading: automaticallyImplyLeading,
       title: title ??
           Text(

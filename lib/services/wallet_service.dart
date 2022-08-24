@@ -4,7 +4,7 @@ import 'package:web3dart/web3dart.dart';
 import 'package:yc_wallet/features/wallet/wallet_manager.dart';
 import 'package:yc_wallet/model/wallet_type.dart';
 import 'package:yc_wallet/repository/apis/moralis/models/erc20/erc20.dart';
-import 'package:yc_wallet/repository/apis/moralis/models/web3_chain.dart';
+import 'package:yc_wallet/repository/apis/moralis/models/moralis_chain/moralis_chain.dart';
 import 'package:yc_wallet/repository/apis/moralis/moralis_api.dart';
 import 'package:yc_wallet/repository/database/wallet_database.dart';
 import 'package:yc_wallet/share/providers.dart';
@@ -50,21 +50,23 @@ Future saveWallet(
 }
 
 /// 获取某地址在某链上的所有资产
-Future<List<Erc20>> getBalances(String address, Web3Chain chain) async {
+Future<List<Erc20>> getBalances(String address, MoralisChain chain) async {
   final nativeBalance =
       await MoralisApi.client.getNativeBalance(address, chain.name);
   final tokenBalances =
       await MoralisApi.client.getTokenBalances(address, chain.name);
 
   final native = nativeBalance.copyWith(
-      chain: chain,
-      name: chain.name,
-      symbol: chain.symbol,
-      logo: chain.logo,
-      thumbnail: chain.thumbnail);
+    chain: chain,
+    name: chain.name,
+    symbol: chain.symbol,
+    logo: chain.logo,
+    decimals: chain.decimals,
+    thumbnail: chain.thumbnail,
+  );
 
   /// 注入链信息
-  tokenBalances.map((e) => e.copyWith(chain: chain));
-  tokenBalances.insert(0, native);
-  return tokenBalances;
+  final newTokens = tokenBalances.map((e) => e.copyWith(chain: chain)).toList();
+  newTokens.insert(0, native);
+  return newTokens;
 }

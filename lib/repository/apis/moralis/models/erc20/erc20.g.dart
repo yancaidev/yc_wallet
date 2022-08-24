@@ -16,7 +16,13 @@ _$_Erc20 _$$_Erc20FromJson(Map<String, dynamic> json) => _$_Erc20(
       balance: json['balance'] as String?,
       chain: json['chain'] == null
           ? null
-          : Web3Chain.fromJson(json['chain'] as Map<String, dynamic>),
+          : MoralisChain.fromJson(json['chain'] as Map<String, dynamic>),
+      quoteInfo: json['quoteInfo'] == null
+          ? null
+          : CurrencyQuote.fromJson(json['quoteInfo'] as Map<String, dynamic>),
+      quote: json['quote'] == null
+          ? null
+          : Quote.fromJson(json['quote'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_Erc20ToJson(_$_Erc20 instance) => <String, dynamic>{
@@ -28,4 +34,6 @@ Map<String, dynamic> _$$_Erc20ToJson(_$_Erc20 instance) => <String, dynamic>{
       'decimals': instance.decimals,
       'balance': instance.balance,
       'chain': instance.chain,
+      'quoteInfo': instance.quoteInfo,
+      'quote': instance.quote,
     };

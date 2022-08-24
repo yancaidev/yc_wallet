@@ -9,6 +9,14 @@ import 'package:path/path.dart' as p;
 
 part 'wallet_database.g.dart';
 
+const _databaseName = "yc-wallet-databse1.sqlite";
+
+Future<String> getDatabasePath() {
+  return getApplicationSupportDirectory().then(
+    (dbFolder) => p.join(dbFolder.path, _databaseName),
+  );
+}
+
 @DriftDatabase(tables: [WalletInfoEntries], daos: [WalletInfoDao])
 class WalletDatabase extends _$WalletDatabase {
   WalletDatabase() : super(_openConnection());
@@ -27,8 +35,9 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     // put the database file, called db.sqlite here, into the documents folder
     // for your app.
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'yc-wallet-db.sqlite'));
+    final dbFolder = await getApplicationSupportDirectory();
+    final file = File(p.join(dbFolder.path, _databaseName));
+
     return NativeDatabase(file);
   });
 }

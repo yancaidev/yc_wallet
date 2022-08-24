@@ -17,7 +17,13 @@ final currentIndexProvider = StateProvider((ref) => 0);
 
 class _MainTab extends ConsumerWidget {
   const _MainTab({Key? key}) : super(key: key);
-  static final _titles = ["钱包", "行情", "NFT", "DAPP", "发现"];
+  static final _titles = [
+    AppConfig.localized.tabWallet,
+    AppConfig.localized.quote,
+    "NFT",
+    "DAPP",
+    AppConfig.localized.discover
+  ];
   static final _icons = [
     Icons.wallet_giftcard,
     Icons.info_outline,

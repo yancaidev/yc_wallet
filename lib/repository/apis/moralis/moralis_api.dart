@@ -7,10 +7,9 @@ import 'package:yc_wallet/repository/apis/moralis/models/erc20/erc20.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 part 'moralis_api.g.dart';
 
+/// Moralis Api 客户端
 @RestApi(
   baseUrl: "https://deep-index.moralis.io/api/v2/",
-
-  /// 在子线程中解析 json 和 模型间的相互转换
   parser: Parser.FlutterCompute,
 )
 abstract class MoralisClient {
@@ -31,6 +30,7 @@ abstract class MoralisClient {
   );
 }
 
+/// Moralis Api  接口
 class MoralisApi {
   static final shared = MoralisApi._internal();
 

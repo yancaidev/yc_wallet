@@ -1,11 +1,15 @@
+// ignore: depend_on_referenced_packages
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:yc_wallet/features/navigation/yc_router_delegate.dart';
 import 'package:yc_wallet/features/navigation/yc_route_infomation_parser.dart';
+import 'package:yc_wallet/repository/apis/coinmaketcap/coinmaketcap_api.dart';
+import 'package:yc_wallet/repository/apis/moralis/moralis_api.dart';
 import 'package:yc_wallet/share/app_state.dart';
 import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/share/quick_import.dart';
-import 'package:yc_wallet/share/user_settings.dart';
 
 void main() {
   runApp(
@@ -28,18 +32,23 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    Log.i("start------------");
-    print("first").then((value) {
-      Log.i("middle ========= $value");
-    });
-    print("second").then((value) {
-      Log.i("middle ========= $value");
-    });
-    Log.i("end----------");
+    _initMoralis();
+    _initCoinMarketCap();
   }
 
-  Future<String> print(String tag) async {
-    return Future.delayed(const Duration(seconds: 1), (() => "$tag ==="));
+  /// 初始化 MoralisApi
+  void _initMoralis() {
+    MoralisApi.shared.setupClient(
+      apiKey: AppConfig.moralisApiKey,
+      baseUrl: AppConfig.moralisBaseUrl,
+    );
+  }
+
+  void _initCoinMarketCap() {
+    CoinMarketCapApi.shared.setupClient(
+      apiKey: AppConfig.coinMarketCapApiKey,
+      baseUrl: AppConfig.coinMarketCapBaseUrl,
+    );
   }
 
   @override
@@ -60,25 +69,30 @@ class _MyAppState extends ConsumerState<MyApp> {
         return Container(
           color: Colors.white,
           child: const Center(
-            child: Text(
-              "请稍候",
-              textDirection: TextDirection.ltr,
-            ),
-          ),
+              child: Text(
+            "请稍候",
+            textDirection: TextDirection.ltr,
+          )),
         );
       },
       error: (error, trace) {
         Log.i("应用状态初始化失败", error, trace);
-        return const Center(
-          child: Text(
-            "程序出錯了",
-            textDirection: TextDirection.ltr,
-          ),
+        return Container(
+          color: Colors.white,
+          child: const Center(
+              child: Text("程序出錯了", textDirection: TextDirection.ltr)),
         );
       },
       data: (data) {
         Log.i("应用状态初始化成功，加载路由！");
         return MaterialApp.router(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData.from(
             colorScheme: const ColorScheme.light(),
           ).copyWith(

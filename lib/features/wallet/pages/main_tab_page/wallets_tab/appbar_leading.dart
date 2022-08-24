@@ -39,7 +39,8 @@ class AppBarLeading extends ConsumerWidget {
               builder: (context, snapshot) {
                 final wallet = snapshot.data as WalletInfo?;
                 return Text(
-                  wallet?.name ?? "钱包 ${wallet?.id ?? ''}",
+                  wallet?.name ??
+                      "${AppConfig.localized.tabWallet} ${wallet?.id ?? ''}",
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 );

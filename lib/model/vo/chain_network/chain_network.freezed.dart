@@ -17,10 +17,10 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ChainNetwork {
   String get name => throw _privateConstructorUsedError;
-  String get url => throw _privateConstructorUsedError;
   bool get isAll => throw _privateConstructorUsedError;
   bool get isSelected => throw _privateConstructorUsedError;
   set isSelected(bool value) => throw _privateConstructorUsedError;
+  MoralisChain? get chain => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ChainNetworkCopyWith<ChainNetwork> get copyWith =>
@@ -32,7 +32,9 @@ abstract class $ChainNetworkCopyWith<$Res> {
   factory $ChainNetworkCopyWith(
           ChainNetwork value, $Res Function(ChainNetwork) then) =
       _$ChainNetworkCopyWithImpl<$Res>;
-  $Res call({String name, String url, bool isAll, bool isSelected});
+  $Res call({String name, bool isAll, bool isSelected, MoralisChain? chain});
+
+  $MoralisChainCopyWith<$Res>? get chain;
 }
 
 /// @nodoc
@@ -46,18 +48,14 @@ class _$ChainNetworkCopyWithImpl<$Res> implements $ChainNetworkCopyWith<$Res> {
   @override
   $Res call({
     Object? name = freezed,
-    Object? url = freezed,
     Object? isAll = freezed,
     Object? isSelected = freezed,
+    Object? chain = freezed,
   }) {
     return _then(_value.copyWith(
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      url: url == freezed
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
               as String,
       isAll: isAll == freezed
           ? _value.isAll
@@ -67,7 +65,22 @@ class _$ChainNetworkCopyWithImpl<$Res> implements $ChainNetworkCopyWith<$Res> {
           ? _value.isSelected
           : isSelected // ignore: cast_nullable_to_non_nullable
               as bool,
+      chain: chain == freezed
+          ? _value.chain
+          : chain // ignore: cast_nullable_to_non_nullable
+              as MoralisChain?,
     ));
+  }
+
+  @override
+  $MoralisChainCopyWith<$Res>? get chain {
+    if (_value.chain == null) {
+      return null;
+    }
+
+    return $MoralisChainCopyWith<$Res>(_value.chain!, (value) {
+      return _then(_value.copyWith(chain: value));
+    });
   }
 }
 
@@ -78,7 +91,10 @@ abstract class _$$_ChainNetworkCopyWith<$Res>
           _$_ChainNetwork value, $Res Function(_$_ChainNetwork) then) =
       __$$_ChainNetworkCopyWithImpl<$Res>;
   @override
-  $Res call({String name, String url, bool isAll, bool isSelected});
+  $Res call({String name, bool isAll, bool isSelected, MoralisChain? chain});
+
+  @override
+  $MoralisChainCopyWith<$Res>? get chain;
 }
 
 /// @nodoc
@@ -95,18 +111,14 @@ class __$$_ChainNetworkCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = freezed,
-    Object? url = freezed,
     Object? isAll = freezed,
     Object? isSelected = freezed,
+    Object? chain = freezed,
   }) {
     return _then(_$_ChainNetwork(
       name: name == freezed
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      url: url == freezed
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
               as String,
       isAll: isAll == freezed
           ? _value.isAll
@@ -116,6 +128,10 @@ class __$$_ChainNetworkCopyWithImpl<$Res>
           ? _value.isSelected
           : isSelected // ignore: cast_nullable_to_non_nullable
               as bool,
+      chain: chain == freezed
+          ? _value.chain
+          : chain // ignore: cast_nullable_to_non_nullable
+              as MoralisChain?,
     ));
   }
 }
@@ -125,24 +141,24 @@ class __$$_ChainNetworkCopyWithImpl<$Res>
 class _$_ChainNetwork with DiagnosticableTreeMixin implements _ChainNetwork {
   _$_ChainNetwork(
       {required this.name,
-      required this.url,
       this.isAll = false,
-      this.isSelected = false});
+      this.isSelected = false,
+      this.chain});
 
   @override
   final String name;
-  @override
-  final String url;
   @override
   @JsonKey()
   final bool isAll;
   @override
   @JsonKey()
   bool isSelected;
+  @override
+  final MoralisChain? chain;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ChainNetwork(name: $name, url: $url, isAll: $isAll, isSelected: $isSelected)';
+    return 'ChainNetwork(name: $name, isAll: $isAll, isSelected: $isSelected, chain: $chain)';
   }
 
   @override
@@ -151,9 +167,9 @@ class _$_ChainNetwork with DiagnosticableTreeMixin implements _ChainNetwork {
     properties
       ..add(DiagnosticsProperty('type', 'ChainNetwork'))
       ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('url', url))
       ..add(DiagnosticsProperty('isAll', isAll))
-      ..add(DiagnosticsProperty('isSelected', isSelected));
+      ..add(DiagnosticsProperty('isSelected', isSelected))
+      ..add(DiagnosticsProperty('chain', chain));
   }
 
   @JsonKey(ignore: true)
@@ -165,19 +181,19 @@ class _$_ChainNetwork with DiagnosticableTreeMixin implements _ChainNetwork {
 abstract class _ChainNetwork implements ChainNetwork {
   factory _ChainNetwork(
       {required final String name,
-      required final String url,
       final bool isAll,
-      bool isSelected}) = _$_ChainNetwork;
+      bool isSelected,
+      final MoralisChain? chain}) = _$_ChainNetwork;
 
   @override
   String get name;
-  @override
-  String get url;
   @override
   bool get isAll;
   @override
   bool get isSelected;
   set isSelected(bool value);
+  @override
+  MoralisChain? get chain;
   @override
   @JsonKey(ignore: true)
   _$$_ChainNetworkCopyWith<_$_ChainNetwork> get copyWith =>

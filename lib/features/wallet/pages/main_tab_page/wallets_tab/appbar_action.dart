@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yc_wallet/model/do/chain_network.dart';
+import 'package:yc_wallet/model/vo/chain_network/chain_network.dart';
 import 'package:yc_wallet/share/providers/chain_networks_provider.dart';
 import 'package:yc_wallet/share/quick_import.dart';
 import 'package:yc_wallet/widgets/password_pad.dart';

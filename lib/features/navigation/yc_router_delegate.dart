@@ -11,9 +11,12 @@ import 'package:yc_wallet/features/wallet/pages/set_wallet_password_page/index.d
 import 'package:yc_wallet/features/wallet/pages/verify_exsiting_password_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_factory_page.dart';
 import 'package:yc_wallet/features/wallet/pages/wallet_intro_page/wallet_intro_page.dart';
+import 'package:yc_wallet/share/app_config.dart';
 import 'package:yc_wallet/share/app_state.dart';
 import 'package:yc_wallet/share/providers.dart';
 import 'package:yc_wallet/utils/log_utils.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Router使用该对象
 class YCRouterDetegate extends RouterDelegate<RouteConfig>
@@ -56,6 +59,7 @@ class YCRouterDetegate extends RouterDelegate<RouteConfig>
 
   @override
   Widget build(BuildContext context) {
+    AppConfig.localized = AppLocalizations.of(context)!;
     return Navigator(
       pages: allPages.toList(),
       onPopPage: (route, result) {

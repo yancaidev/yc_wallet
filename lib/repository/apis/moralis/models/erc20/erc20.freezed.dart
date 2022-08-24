@@ -28,7 +28,9 @@ mixin _$Erc20 {
   String? get thumbnail => throw _privateConstructorUsedError;
   int? get decimals => throw _privateConstructorUsedError;
   String? get balance => throw _privateConstructorUsedError;
-  Web3Chain? get chain => throw _privateConstructorUsedError;
+  MoralisChain? get chain => throw _privateConstructorUsedError;
+  CurrencyQuote? get quoteInfo => throw _privateConstructorUsedError;
+  Quote? get quote => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -47,9 +49,13 @@ abstract class $Erc20CopyWith<$Res> {
       String? thumbnail,
       int? decimals,
       String? balance,
-      Web3Chain? chain});
+      MoralisChain? chain,
+      CurrencyQuote? quoteInfo,
+      Quote? quote});
 
-  $Web3ChainCopyWith<$Res>? get chain;
+  $MoralisChainCopyWith<$Res>? get chain;
+  $CurrencyQuoteCopyWith<$Res>? get quoteInfo;
+  $QuoteCopyWith<$Res>? get quote;
 }
 
 /// @nodoc
@@ -70,6 +76,8 @@ class _$Erc20CopyWithImpl<$Res> implements $Erc20CopyWith<$Res> {
     Object? decimals = freezed,
     Object? balance = freezed,
     Object? chain = freezed,
+    Object? quoteInfo = freezed,
+    Object? quote = freezed,
   }) {
     return _then(_value.copyWith(
       tokenAddress: tokenAddress == freezed
@@ -103,18 +111,48 @@ class _$Erc20CopyWithImpl<$Res> implements $Erc20CopyWith<$Res> {
       chain: chain == freezed
           ? _value.chain
           : chain // ignore: cast_nullable_to_non_nullable
-              as Web3Chain?,
+              as MoralisChain?,
+      quoteInfo: quoteInfo == freezed
+          ? _value.quoteInfo
+          : quoteInfo // ignore: cast_nullable_to_non_nullable
+              as CurrencyQuote?,
+      quote: quote == freezed
+          ? _value.quote
+          : quote // ignore: cast_nullable_to_non_nullable
+              as Quote?,
     ));
   }
 
   @override
-  $Web3ChainCopyWith<$Res>? get chain {
+  $MoralisChainCopyWith<$Res>? get chain {
     if (_value.chain == null) {
       return null;
     }
 
-    return $Web3ChainCopyWith<$Res>(_value.chain!, (value) {
+    return $MoralisChainCopyWith<$Res>(_value.chain!, (value) {
       return _then(_value.copyWith(chain: value));
+    });
+  }
+
+  @override
+  $CurrencyQuoteCopyWith<$Res>? get quoteInfo {
+    if (_value.quoteInfo == null) {
+      return null;
+    }
+
+    return $CurrencyQuoteCopyWith<$Res>(_value.quoteInfo!, (value) {
+      return _then(_value.copyWith(quoteInfo: value));
+    });
+  }
+
+  @override
+  $QuoteCopyWith<$Res>? get quote {
+    if (_value.quote == null) {
+      return null;
+    }
+
+    return $QuoteCopyWith<$Res>(_value.quote!, (value) {
+      return _then(_value.copyWith(quote: value));
     });
   }
 }
@@ -132,10 +170,16 @@ abstract class _$$_Erc20CopyWith<$Res> implements $Erc20CopyWith<$Res> {
       String? thumbnail,
       int? decimals,
       String? balance,
-      Web3Chain? chain});
+      MoralisChain? chain,
+      CurrencyQuote? quoteInfo,
+      Quote? quote});
 
   @override
-  $Web3ChainCopyWith<$Res>? get chain;
+  $MoralisChainCopyWith<$Res>? get chain;
+  @override
+  $CurrencyQuoteCopyWith<$Res>? get quoteInfo;
+  @override
+  $QuoteCopyWith<$Res>? get quote;
 }
 
 /// @nodoc
@@ -157,6 +201,8 @@ class __$$_Erc20CopyWithImpl<$Res> extends _$Erc20CopyWithImpl<$Res>
     Object? decimals = freezed,
     Object? balance = freezed,
     Object? chain = freezed,
+    Object? quoteInfo = freezed,
+    Object? quote = freezed,
   }) {
     return _then(_$_Erc20(
       tokenAddress: tokenAddress == freezed
@@ -190,7 +236,15 @@ class __$$_Erc20CopyWithImpl<$Res> extends _$Erc20CopyWithImpl<$Res>
       chain: chain == freezed
           ? _value.chain
           : chain // ignore: cast_nullable_to_non_nullable
-              as Web3Chain?,
+              as MoralisChain?,
+      quoteInfo: quoteInfo == freezed
+          ? _value.quoteInfo
+          : quoteInfo // ignore: cast_nullable_to_non_nullable
+              as CurrencyQuote?,
+      quote: quote == freezed
+          ? _value.quote
+          : quote // ignore: cast_nullable_to_non_nullable
+              as Quote?,
     ));
   }
 }
@@ -206,7 +260,9 @@ class _$_Erc20 implements _Erc20 {
       this.thumbnail,
       this.decimals,
       this.balance,
-      this.chain});
+      this.chain,
+      this.quoteInfo,
+      this.quote});
 
   factory _$_Erc20.fromJson(Map<String, dynamic> json) =>
       _$$_Erc20FromJson(json);
@@ -227,11 +283,15 @@ class _$_Erc20 implements _Erc20 {
   @override
   final String? balance;
   @override
-  final Web3Chain? chain;
+  final MoralisChain? chain;
+  @override
+  final CurrencyQuote? quoteInfo;
+  @override
+  final Quote? quote;
 
   @override
   String toString() {
-    return 'Erc20(tokenAddress: $tokenAddress, name: $name, symbol: $symbol, logo: $logo, thumbnail: $thumbnail, decimals: $decimals, balance: $balance, chain: $chain)';
+    return 'Erc20(tokenAddress: $tokenAddress, name: $name, symbol: $symbol, logo: $logo, thumbnail: $thumbnail, decimals: $decimals, balance: $balance, chain: $chain, quoteInfo: $quoteInfo, quote: $quote)';
   }
 
   @override
@@ -247,7 +307,9 @@ class _$_Erc20 implements _Erc20 {
             const DeepCollectionEquality().equals(other.thumbnail, thumbnail) &&
             const DeepCollectionEquality().equals(other.decimals, decimals) &&
             const DeepCollectionEquality().equals(other.balance, balance) &&
-            const DeepCollectionEquality().equals(other.chain, chain));
+            const DeepCollectionEquality().equals(other.chain, chain) &&
+            const DeepCollectionEquality().equals(other.quoteInfo, quoteInfo) &&
+            const DeepCollectionEquality().equals(other.quote, quote));
   }
 
   @JsonKey(ignore: true)
@@ -261,7 +323,9 @@ class _$_Erc20 implements _Erc20 {
       const DeepCollectionEquality().hash(thumbnail),
       const DeepCollectionEquality().hash(decimals),
       const DeepCollectionEquality().hash(balance),
-      const DeepCollectionEquality().hash(chain));
+      const DeepCollectionEquality().hash(chain),
+      const DeepCollectionEquality().hash(quoteInfo),
+      const DeepCollectionEquality().hash(quote));
 
   @JsonKey(ignore: true)
   @override
@@ -283,7 +347,9 @@ abstract class _Erc20 implements Erc20 {
       final String? thumbnail,
       final int? decimals,
       final String? balance,
-      final Web3Chain? chain}) = _$_Erc20;
+      final MoralisChain? chain,
+      final CurrencyQuote? quoteInfo,
+      final Quote? quote}) = _$_Erc20;
 
   factory _Erc20.fromJson(Map<String, dynamic> json) = _$_Erc20.fromJson;
 
@@ -303,7 +369,11 @@ abstract class _Erc20 implements Erc20 {
   @override
   String? get balance;
   @override
-  Web3Chain? get chain;
+  MoralisChain? get chain;
+  @override
+  CurrencyQuote? get quoteInfo;
+  @override
+  Quote? get quote;
   @override
   @JsonKey(ignore: true)
   _$$_Erc20CopyWith<_$_Erc20> get copyWith =>

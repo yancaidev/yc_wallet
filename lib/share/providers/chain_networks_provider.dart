@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:yc_wallet/model/do/chain_network.dart';
+import 'package:yc_wallet/model/vo/chain_network/chain_network.dart';
+import 'package:yc_wallet/repository/apis/moralis/models/moralis_chain/moralis_chain.dart';
+import 'package:yc_wallet/share/app_config.dart';
 
 /// 所有支持的网络列表
 final supporttedNetworksProvider =
@@ -25,15 +27,37 @@ final networksNeedToTrackProvider = StateProvider((ref) {
       .toList();
 });
 
+final morilisChainsToTrack = StateProvider((ref) {
+  final networks = ref.watch(networksNeedToTrackProvider);
+  return networks
+      .where((element) => element.chain != null)
+      .map((e) => e.chain!)
+      .toList();
+});
+
 class ChainNetworksNotifier extends StateNotifier<List<ChainNetwork>> {
   ChainNetworksNotifier()
       : super([
-          ChainNetwork(name: "全部网络", url: "", isAll: true),
-          ChainNetwork(name: "Ethereum", url: "", isSelected: true),
-          ChainNetwork(name: "BSC", url: ""),
+          ChainNetwork(name: AppConfig.localized.allNetwork, isAll: true),
+          ChainNetwork(
+              name: "Ethereum", isSelected: true, chain: MoralisChain.ethChain),
+          // ChainNetwork(
+          //     name: "Ethereum Test",
+          //     isSelected: false,
+          //     chain: MoralisChain.ethTestChain),
+          ChainNetwork(name: "BSC", chain: MoralisChain.bscChain),
+          // ChainNetwork(name: "BSC Test", chain: MoralisChain.bscTestChain),
         ]);
 
   void switchNetwork(ChainNetwork network) {
+    if (state.firstWhere((element) => element.isSelected) == network) {
+      if (!AppConfig.shared.isReleaseMode) {
+        state = [...state];
+      }
+      return;
+    }
+    ;
+
     state = [
       for (final cn in state)
         if (cn.isSelected)

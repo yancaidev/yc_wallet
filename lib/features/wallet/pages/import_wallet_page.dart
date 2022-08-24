@@ -92,13 +92,14 @@ class _ImportWalletState extends ConsumerState<_ImportWallet> {
                                     hintText:
                                         "助记词之间用空格隔开。支持 12 位，24 位英文助记词导入，支持明文私钥导入。"),
                               ),
-                              IconButton(
-                                  alignment: Alignment.bottomRight,
-                                  onPressed: () {
-                                    showToast("二维码扫描导入功能待完成",
-                                        toastType: ToastType.warn);
-                                  },
-                                  icon: const Icon(Icons.qr_code_scanner)),
+                              // IconButton(
+                              //   alignment: Alignment.bottomRight,
+                              //   onPressed: () {
+                              //     showToast("二维码扫描导入功能待完成",
+                              //         toastType: ToastType.warn);
+                              //   },
+                              //   icon: const Icon(Icons.qr_code_scanner),
+                              // ),
                             ],
                           )),
                     ),
